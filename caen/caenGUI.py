@@ -40,7 +40,16 @@ class CAENQueryThread(QThread):
             tcpClass.sendMessage(self.message)
             
             if self.receive:
-                data = tcpClass.socket.recv(BUFFER_SIZE)[8:].decode("utf-8")
+                data = tcpClass.socket.recv(BUFFER_SIZE)
+                length = data[3] | (data[2] << 8) | (data[1] << 16) | (data[0] << 24)
+                while len(data) < length :
+                    print("wait for more data",len(data), length)
+                    chunk=tcpClass.socket.recv(BUFFER_SIZE)
+                    if not chunk:
+                        break
+                    data+=chunk
+                data=data[8:].decode("utf-8")
+
                 parsedData = {}
                 for token in data.split(','):
                     if token.startswith('caen'):

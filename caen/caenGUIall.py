@@ -64,6 +64,9 @@ class CAENQueryThread(QThread):
                             if not chunk:
                                 break
                             data += chunk
+                            length = data[3] | (data[2] << 8) | (data[1] << 16) | (data[0] << 24)
+                            if len(data) >= length :
+                                break   
                         except:
                             break
                     data = data[8:]
@@ -92,7 +95,7 @@ class tcp_util:
         self.ip = ip
         self.port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.settimeout(0.5)
+#        self.socket.settimeout(0.5)
         self.headerBytes = 4
 
         self.connectSocket()

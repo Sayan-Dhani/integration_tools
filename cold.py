@@ -798,6 +798,7 @@ class MainApp(QtWidgets.QMainWindow):
                                 door_msg += "CO2 levels safe: True"
                     safe_to_open_led.setStyleSheet("background-color: green;" if is_safe else "background-color: red;")
                     logger.debug(f"Updated safe to open LED: {'green' if is_safe else 'red'} (is_safe={is_safe})")
+                    self.system._martacoldroom.publish_door_safety_status(is_safe)
                     self.marta_coldroom_tab.findChild(QtWidgets.QLabel, "door_safety_msg").setText(door_msg)
 
                 # =========================================================================================== COLDROOM RUN PROCESS ===========================================================================================

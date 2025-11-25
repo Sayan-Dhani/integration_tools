@@ -26,7 +26,7 @@ class MartaColdRoomMQTTClient:
         self.TOPIC_CO2_SENSOR = system_obj.settings["Coldroom"]["co2_sensor_topic"]
         self.TOPIC_COLDROOM_AIR = system_obj.settings["Coldroom"]["shellies_air_topic"]
         self.TOPIC_ALARM = "/alarm"
-        
+
         self.DRY_AIR_BYPASS_URL = "http://192.168.0.204/relay/0?turn="
 
         logger.info("Initializing MQTT client with topics:")
@@ -178,6 +178,19 @@ class MartaColdRoomMQTTClient:
             topic = f"{self.TOPIC_BASE_COLDROOM}cmd/{command}"
 
         logger.info(f"Sending command '{command}' to {target} with payload: {payload}")
+        ret = self._client.publish(topic, payload)
+        logger.debug(ret)
+
+    def publish_door_safety_status(self, is_safe):
+        """
+        Publish the door safety status to a specific MQTT topic.
+
+        Args:
+            is_safe (bool): True if the door is safe to open, False otherwise.
+        """
+        topic = f"{self.TOPIC_BASE_COLDROOM}safe_to_open"
+        payload = int(is_safe)
+        print(f"Publishing door safety status: {payload} to topic: {topic}")
         ret = self._client.publish(topic, payload)
         logger.debug(ret)
 

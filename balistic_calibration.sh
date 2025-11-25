@@ -38,7 +38,7 @@ echo "CAEN channel $LV_CHANNEL turned on."
 
 # Capture MQTT messages and parse JSON output
 echo "Capturing MQTT data..."
-mqtt_output=$(mosquitto_sub -h 192.168.0.45 -t '/ph2acf/#' -C 1)
+mqtt_output=$(timeout 90 mosquitto_sub -h 192.168.0.45 -t '/ph2acf/#' -C 1)
 
 # Parse and display JSON output
 #curl -X PUT   -H "Content-Type: application/json"   -d '{"temperature_offsets": {"C0": 10, "C1": 20}}'   http://cmslabserver:5000/modules/PS_40_05_IBA-00001
