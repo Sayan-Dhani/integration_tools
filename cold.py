@@ -20,6 +20,8 @@ from coldroom.safety import (
     check_light_safe_to_turn_on,
     check_marta_safe,
     soft_interlock_loop,
+    interpret_door_safety,
+    interpret_soft_interlock,
 )
 from caen.caenGUIall import caenGUIall
 from Inner_tracker_GUI.caenGUIall_v2 import caenGUI8LV
@@ -739,24 +741,39 @@ class MainApp(QtWidgets.QMainWindow):
             )
             logger.info(f"Updated soft interlock LED: {status_color} with pulse")
 
+        verdict = interpret_soft_interlock(is_safe)
+
+        # Also show the verdict as the LED caption so the light is self-explanatory
+        soft_interlock_caption = self.marta_coldroom_tab.findChild(
+            QtWidgets.QLabel, "soft_interlock_label"
+        )
+        if soft_interlock_caption:
+            caption = "Soft Interlock\n" + ("OK" if is_safe else "TRIPPED")
+            soft_interlock_caption.setText(caption)
+            soft_interlock_caption.setStyleSheet(
+                "color: #1a7f37;" if is_safe else "color: #c0362c;"
+            )
+
         soft_interlock_msg_label = self.marta_coldroom_tab.findChild(
             QtWidgets.QLabel, "soft_interlock_msg"
         )
         if soft_interlock_msg_label:
-            soft_interlock_msg_label.setText(msg)
-            logger.info(f"Updated soft interlock message: {msg}")
+            soft_interlock_msg_label.setText(f"{verdict}\n{msg}")
+            logger.info(f"Updated soft interlock message: {verdict} | {msg}")
 
         logger.info("Completed soft interlock loop")
 
     def update_ui(self):
         """Update UI with current system status"""
         try:
-            self.system._martacoldroom._cleanroom_last_update_elapsed_time = (
-                time.time() - self.system._martacoldroom._cleanroom_last_update_timer
-            )
-            self.system.status["cleanroom"][
-                "elapsed_time"
-            ] = self.system._martacoldroom._cleanroom_last_update_elapsed_time
+            if self.system._martacoldroom:
+                self.system._martacoldroom._cleanroom_last_update_elapsed_time = (
+                    time.time()
+                    - self.system._martacoldroom._cleanroom_last_update_timer
+                )
+                self.system.status["cleanroom"][
+                    "elapsed_time"
+                ] = self.system._martacoldroom._cleanroom_last_update_elapsed_time
             self.modules_list_tab.light_on = check_light_status(self.system.status)
             # Get the central widget
             central = self.marta_coldroom_tab
@@ -1093,10 +1110,26 @@ class MainApp(QtWidgets.QMainWindow):
                     logger.debug(
                         f"Updated safe to open LED: {'green' if is_safe else 'red'} (is_safe={is_safe})"
                     )
-                    self.system._martacoldroom.publish_door_safety_status(is_safe)
+                    if self.system._martacoldroom:
+                        self.system._martacoldroom.publish_door_safety_status(is_safe)
+
+                    verdict = interpret_door_safety(is_safe)
+
+                    # Show the verdict as the LED caption so the light is self-explanatory
+                    door_caption = central.findChild(
+                        QtWidgets.QLabel, "coldroom_runlabel_2"
+                    )
+                    if door_caption:
+                        door_caption.setText(
+                            "Safe to open\n" + ("YES" if is_safe else "NO")
+                        )
+                        door_caption.setStyleSheet(
+                            "color: #1a7f37;" if is_safe else "color: #c0362c;"
+                        )
+
                     self.marta_coldroom_tab.findChild(
                         QtWidgets.QLabel, "door_safety_msg"
-                    ).setText(door_msg)
+                    ).setText(f"{verdict}\n\n{door_msg}")
 
                 # =========================================================================================== COLDROOM RUN PROCESS ===========================================================================================
                 # Run status

@@ -1,7 +1,16 @@
 #!/bin/env python3
 # create QT GUI with one button to send message to TCP server
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QTextEdit, QHBoxLayout, QFrame, QLabel
+from PyQt5.QtWidgets import (
+    QApplication,
+    QWidget,
+    QPushButton,
+    QVBoxLayout,
+    QTextEdit,
+    QHBoxLayout,
+    QFrame,
+    QLabel,
+)
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QFont
@@ -10,7 +19,16 @@ import json
 
 BUFFER_SIZE = 100000
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QTextEdit, QHBoxLayout, QFrame, QLabel
+from PyQt5.QtWidgets import (
+    QApplication,
+    QWidget,
+    QPushButton,
+    QVBoxLayout,
+    QTextEdit,
+    QHBoxLayout,
+    QFrame,
+    QLabel,
+)
 from PyQt5.QtCore import pyqtSlot, QTimer, QThread, pyqtSignal, QObject
 import socket
 import json
@@ -31,14 +49,13 @@ class CAENQueryThread(QThread):
         self.message = None
         self.receive = False
         self.running = True
-        self.queue =[]
+        self.queue = []
         self.receiveQueue = []
 
     def setup_query(self, message, receive=False):
         """Setup the query to be executed"""
         self.queue.append(message)
         self.receiveQueue.append(receive)
-        
 
     def stop(self):
         """Stop the thread"""
@@ -50,7 +67,7 @@ class CAENQueryThread(QThread):
         #        print("Running query thread",self.message)
 
         while self.queue:
-            #create lock
+            # create lock
             self.message = self.queue.pop(0)
             self.receive = self.receiveQueue.pop(0)
             try:
@@ -64,9 +81,14 @@ class CAENQueryThread(QThread):
                             if not chunk:
                                 break
                             data += chunk
-                            length = data[3] | (data[2] << 8) | (data[1] << 16) | (data[0] << 24)
-                            if len(data) >= length :
-                                break   
+                            length = (
+                                data[3]
+                                | (data[2] << 8)
+                                | (data[1] << 16)
+                                | (data[0] << 24)
+                            )
+                            if len(data) >= length:
+                                break
                         except:
                             break
                     data = data[8:]
@@ -95,7 +117,7 @@ class tcp_util:
         self.ip = ip
         self.port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#        self.socket.settimeout(0.5)
+        #        self.socket.settimeout(0.5)
         self.headerBytes = 4
 
         self.connectSocket()
@@ -129,7 +151,9 @@ class tcp_util:
         messageLength = len(message) + self.headerBytes + 4
         N = 0
         encodedMessage = (
-            (messageLength).to_bytes(4, byteorder="big") + N.to_bytes(4, byteorder="big") + message.encode("utf-8")
+            (messageLength).to_bytes(4, byteorder="big")
+            + N.to_bytes(4, byteorder="big")
+            + message.encode("utf-8")
         )
         return encodedMessage
 
@@ -191,11 +215,15 @@ class caenGUIall(QWidget):
             hlayout.addWidget(l)
             self.button = QPushButton("ON", self)
             self.button.setMinimumWidth(30)
-            self.button.clicked.connect(lambda checked, channel=channel: self.on(channel))
+            self.button.clicked.connect(
+                lambda checked, channel=channel: self.on(channel)
+            )
             hlayout.addWidget(self.button)
             self.button = QPushButton("OFF", self)
             self.button.setMinimumWidth(30)
-            self.button.clicked.connect(lambda checked, channel=channel: self.off(channel))
+            self.button.clicked.connect(
+                lambda checked, channel=channel: self.off(channel)
+            )
             hlayout.addWidget(self.button)
             # use QFrame as a led
             self.label[channel] = QLabel("n/a")
@@ -220,7 +248,7 @@ class caenGUIall(QWidget):
     def update(self):
         """Periodic update method"""
         print("Update")
-            
+
         self.queryThread.setup_query("GetStatus,PowerSupplyId:caen", True)
         # if thread not running, start it
         if not self.queryThread.isRunning():
@@ -262,10 +290,10 @@ class caenGUIall(QWidget):
     def on(self, channel):
         print(f"TurnOn,PowerSupplyId:caen,ChannelId:{channel}")
         self.queryThread.setup_query(f"TurnOn,PowerSupplyId:caen,ChannelId:{channel}")
-        #if thread not running, start it
+        # if thread not running, start it
         if not self.queryThread.isRunning():
             print("Starting query thread")
-            self.queryThread.start()    
+            self.queryThread.start()
 
     @pyqtSlot()
     def off(self, channel):
@@ -273,36 +301,41 @@ class caenGUIall(QWidget):
         self.queryThread.setup_query(f"TurnOff,PowerSupplyId:caen,ChannelId:{channel}")
         if not self.queryThread.isRunning():
             print("Starting query thread")
-            self.queryThread.start()    
+            self.queryThread.start()
+
 
 #        self.queryThread.start()
 
-    # def send(self,message,receive=False):
-    #     print(message)
-    #     tcpClass = tcp_util(ip='192.168.0.45',port=7000)
-    #     tcpClass.sendMessage(message)
-    #     try:
-    #       if receive :
-    #         data = tcpClass.socket.recv(BUFFER_SIZE)[8:].decode("utf-8")
-    #         print(data)
-    #         parsedData={}
-    #         for token in data.split(',') :
-    #             if token.startswith('caen'):
-    #                 key,value=token.split(":")
-    #                 value=float(value)
-    #                 parsedData[key]=value
-    #         print(json.dumps(parsedData,indent=4),flush=True)
-    #         return parsedData
-    #     except:
-    #         print("Cannot parse")
+# def send(self,message,receive=False):
+#     print(message)
+#     tcpClass = tcp_util(ip='192.168.0.45',port=7000)
+#     tcpClass.sendMessage(message)
+#     try:
+#       if receive :
+#         data = tcpClass.socket.recv(BUFFER_SIZE)[8:].decode("utf-8")
+#         print(data)
+#         parsedData={}
+#         for token in data.split(',') :
+#             if token.startswith('caen'):
+#                 key,value=token.split(":")
+#                 value=float(value)
+#                 parsedData[key]=value
+#         print(json.dumps(parsedData,indent=4),flush=True)
+#         return parsedData
+#     except:
+#         print("Cannot parse")
 
 
 import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="CAEN GUI")
-    parser.add_argument("--ip", type=str, default="192.168.0.45", help="IP address of the CAEN server")
-    parser.add_argument("--port", type=int, default=7000, help="Port of the CAEN server")
+    parser.add_argument(
+        "--ip", type=str, default="192.168.0.45", help="IP address of the CAEN server"
+    )
+    parser.add_argument(
+        "--port", type=int, default=7000, help="Port of the CAEN server"
+    )
     args = parser.parse_args()
 
     app = QApplication(sys.argv)

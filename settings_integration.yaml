@@ -5,10 +5,12 @@ check_id_command: cd /home/thermal/BurnIn_moduleTest && python3 moduleTest.py --
 dark_test_command: cd /home/thermal/BurnIn_moduleTest && python3 moduleTest.py --module
   {module_id} --slot `echo {fiber_endpoint} | perl -pe 's/.*OG//'` --board `echo {fiber_endpoint}
   | perl -pe 's/_.*//'` -c calibrationandpedenoise  --session {session} | tee /tmp/analysis.log
-db_url: http://192.168.0.45:5000
+# db_url: http://192.168.0.45:5000
+db_url: http://pccmslab1:5000
 light_on_command: cd /home/thermal/BurnIn_moduleTest && python3 moduleTest.py --module
   {module_id} --slot `echo {fiber_endpoint} | perl -pe 's/.*OG//'` --board `echo {fiber_endpoint}
   | perl -pe 's/_.*//'` -c eyeOpening  --session {session}
-mqtt_server: 192.168.0.45
+mqtt_server: pccmslab1 #192.168.0.45
+# mqtt_server: 192.168.0.45
 mqtt_topic: /ar/thermal/image
 results_url: file:///tmp/latest_ana/index.html

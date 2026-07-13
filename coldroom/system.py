@@ -16,7 +16,12 @@ class System:
         # Load settings
         self._settings = {}  # Initialize private settings variable
         try:
-            with open(os.path.join(os.path.dirname(__file__), os.pardir, "settings_coldroom.yaml"), "r") as f:
+            with open(
+                os.path.join(
+                    os.path.dirname(__file__), os.pardir, "settings_coldroom.yaml"
+                ),
+                "r",
+            ) as f:
                 self._settings = yaml.safe_load(f)
                 logger.debug("Settings loaded successfully")
                 logger.debug(f"MQTT Broker: {self._settings['mqtt']['broker']}")
@@ -28,14 +33,25 @@ class System:
                 "Cleanroom": {"mqtt_topic": "/environment/HumAndTemp001/#"},
                 "MARTA": {"mqtt_topic": "/MARTA/#"},
                 "Coldroom": {"mqtt_topic": "/coldroom/#"},
-                "ThermalCamera": {"mqtt_topic": "/thermalcamera/#"}
+                "ThermalCamera": {"mqtt_topic": "/thermalcamera/#"},
             }
 
         # Global variables
         self.BROKER = self._settings["mqtt"]["broker"]
         self.PORT = self._settings["mqtt"]["port"]
-        self._status = {"marta": {}, "coldroom": {}, "thermal_camera": {}, "caen": {}, "cleanroom": {}, "coldroomair": {}}
-        self.safety_flags = {"door_locked": True, "sleep": True, "hv_safe": False}  # Default value to safest state
+        self._status = {
+            "marta": {},
+            "coldroom": {},
+            "thermal_camera": {},
+            "caen": {},
+            "cleanroom": {},
+            "coldroomair": {},
+        }
+        self.safety_flags = {
+            "door_locked": True,
+            "sleep": True,
+            "hv_safe": False,
+        }  # Default value to safest state
 
         # Thread control
         self._mqtt_thread = None
@@ -58,9 +74,9 @@ class System:
         except Exception as e:
             logger.error(f"Error initializing Thermal Camera client: {e}")
             self._thermalcamera = None
-            
+
         try:
-            self._caen = None  
+            self._caen = None
         except Exception as e:
             logger.error(f"Error initializing CAEN client: {e}")
             self._caen = None
@@ -73,7 +89,7 @@ class System:
     def settings(self):
         """Get the current settings"""
         return self._settings
-    
+
     @settings.setter
     def settings(self, value):
         """Update settings and save to file"""
@@ -81,7 +97,9 @@ class System:
             raise ValueError("Settings must be a dictionary")
         self._settings = value
         try:
-            with open(os.path.join(os.path.dirname(__file__), "settings.yaml"), "w") as f:
+            with open(
+                os.path.join(os.path.dirname(__file__), "settings.yaml"), "w"
+            ) as f:
                 yaml.dump(self._settings, f, default_flow_style=False)
         except Exception as e:
             logger.error(f"Error saving settings: {e}")
@@ -115,7 +133,7 @@ class System:
             self._mqtt_thread.daemon = True
             self._mqtt_thread.start()
             logger.info("MQTT thread started")
-            
+
             # Start CAEN status update thread
             if self._caen and not self._caen_thread:
                 self._caen_thread_stop = False
@@ -133,7 +151,7 @@ class System:
             self._thread_stop = True
             self._mqtt_thread.join(timeout=2)
             logger.info("MQTT thread stopped")
-            
+
             # Stop CAEN status thread
             if self._caen_thread and self._caen_thread.is_alive():
                 self._caen_thread_stop = True
@@ -154,13 +172,13 @@ class System:
             if self._thermalcamera:
                 logger.debug("Starting Thermal Camera client loop")
                 self._thermalcamera.loop_start()
-            
+
             logger.info("All MQTT client loops started")
-            
+
             # Keep thread running
             while not self._thread_stop:
                 time.sleep(1)
-                
+
         except Exception as e:
             logger.error(f"Error in MQTT loop: {e}")
         finally:
@@ -184,21 +202,21 @@ class System:
         try:
             # Stop MQTT thread first
             self.stop_mqtt_thread()
-            
+
             # Stop individual client loops
-            if hasattr(self, '_martacoldroom') and self._martacoldroom:
+            if hasattr(self, "_martacoldroom") and self._martacoldroom:
                 logger.debug("Stopping MARTA/Coldroom/Cleanroom client loops")
                 self._martacoldroom.stop_client_loops()
 
-            if hasattr(self, '_thermalcamera') and self._thermalcamera:
+            if hasattr(self, "_thermalcamera") and self._thermalcamera:
                 logger.debug("Stopping Thermal Camera client loop")
                 self._thermalcamera.loop_start()
-            
-            if hasattr(self, '_caen') and self._caen:
+
+            if hasattr(self, "_caen") and self._caen:
                 logger.debug("Disconnecting CAEN TCP client")
                 self._caen.disconnect()
-                
+
             logger.info("All resources cleaned up")
-            
+
         except Exception as e:
             logger.error(f"Error during cleanup: {e}")

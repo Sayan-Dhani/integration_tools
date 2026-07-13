@@ -56,7 +56,9 @@ class Ui_MainWindow(object):
         self.label.setObjectName("label")
         self.horizontalLayout.addWidget(self.label)
         self.ringLE = QtWidgets.QLineEdit(self.tab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.ringLE.sizePolicy().hasHeightForWidth())
@@ -68,7 +70,9 @@ class Ui_MainWindow(object):
         self.label_2.setObjectName("label_2")
         self.horizontalLayout.addWidget(self.label_2)
         self.positionLE = QtWidgets.QLineEdit(self.tab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.positionLE.sizePolicy().hasHeightForWidth())
@@ -81,7 +85,9 @@ class Ui_MainWindow(object):
         self.graphicsView.setMinimumSize(QtCore.QSize(400, 400))
         self.graphicsView.setObjectName("graphicsView")
         self.verticalLayout.addWidget(self.graphicsView)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+        )
         self.verticalLayout.addItem(spacerItem)
         self.label_7 = QtWidgets.QLabel(self.tab)
         self.label_7.setObjectName("label_7")
@@ -121,10 +127,14 @@ class Ui_MainWindow(object):
         self.connectPowerPB.setObjectName("connectPowerPB")
         self.gridLayout.addWidget(self.connectPowerPB, 2, 0, 1, 1)
         self.connectPowerLED = QtWidgets.QFrame(self.tab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.connectPowerLED.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.connectPowerLED.sizePolicy().hasHeightForWidth()
+        )
         self.connectPowerLED.setSizePolicy(sizePolicy)
         self.connectPowerLED.setMinimumSize(QtCore.QSize(30, 34))
         self.connectPowerLED.setStyleSheet("background-color: rgb(85, 170, 0);")
@@ -136,17 +146,23 @@ class Ui_MainWindow(object):
         self.fiberCB.setObjectName("fiberCB")
         self.gridLayout.addWidget(self.fiberCB, 0, 1, 1, 1)
         self.connectFiberLED = QtWidgets.QFrame(self.tab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.connectFiberLED.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.connectFiberLED.sizePolicy().hasHeightForWidth()
+        )
         self.connectFiberLED.setSizePolicy(sizePolicy)
         self.connectFiberLED.setMinimumSize(QtCore.QSize(30, 34))
         self.connectFiberLED.setStyleSheet("background-color: rgb(85, 170, 0);")
         self.connectFiberLED.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.connectFiberLED.setObjectName("connectFiberLED")
         self.gridLayout.addWidget(self.connectFiberLED, 0, 3, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.gridLayout.addItem(spacerItem1, 0, 2, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         self.horizontalLayout_8.addLayout(self.verticalLayout)
@@ -161,10 +177,14 @@ class Ui_MainWindow(object):
         self.checkIDlabel = QtWidgets.QLabel(self.tab)
         self.checkIDlabel.setObjectName("checkIDlabel")
         self.horizontalLayout_3.addWidget(self.checkIDlabel)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_3.addItem(spacerItem2)
         self.checkIDLED = QtWidgets.QFrame(self.tab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.checkIDLED.sizePolicy().hasHeightForWidth())
@@ -177,12 +197,18 @@ class Ui_MainWindow(object):
         self.verticalLayout_5.addLayout(self.horizontalLayout_3)
         self.gridLayout_2 = QtWidgets.QGridLayout()
         self.gridLayout_2.setObjectName("gridLayout_2")
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.gridLayout_2.addItem(spacerItem3, 2, 2, 1, 1)
-        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem4 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.gridLayout_2.addItem(spacerItem4, 0, 2, 1, 1)
         self.hvOFFTestLED = QtWidgets.QFrame(self.tab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.hvOFFTestLED.sizePolicy().hasHeightForWidth())
@@ -202,7 +228,9 @@ class Ui_MainWindow(object):
         self.hvONTestCB.setObjectName("hvONTestCB")
         self.gridLayout_2.addWidget(self.hvONTestCB, 2, 1, 1, 1)
         self.hvONTestLED = QtWidgets.QFrame(self.tab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.hvONTestLED.sizePolicy().hasHeightForWidth())
@@ -253,7 +281,9 @@ class Ui_MainWindow(object):
         self.lvOffButton.setObjectName("lvOffButton")
         self.horizontalLayout_4.addWidget(self.lvOffButton)
         self.lvLabel = QtWidgets.QLabel(self.tab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.lvLabel.sizePolicy().hasHeightForWidth())
@@ -278,7 +308,9 @@ class Ui_MainWindow(object):
         self.hvOffButton.setObjectName("hvOffButton")
         self.horizontalLayout_5.addWidget(self.hvOffButton)
         self.hvLabel = QtWidgets.QLabel(self.tab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.hvLabel.sizePolicy().hasHeightForWidth())
@@ -302,7 +334,9 @@ class Ui_MainWindow(object):
         self.airOFFPB.setObjectName("airOFFPB")
         self.horizontalLayout_6.addWidget(self.airOFFPB)
         self.tMaxLabel = QtWidgets.QLabel(self.tab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tMaxLabel.sizePolicy().hasHeightForWidth())
@@ -310,7 +344,9 @@ class Ui_MainWindow(object):
         self.tMaxLabel.setObjectName("tMaxLabel")
         self.horizontalLayout_6.addWidget(self.tMaxLabel)
         self.airLed = QtWidgets.QFrame(self.tab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.airLed.sizePolicy().hasHeightForWidth())
@@ -321,7 +357,9 @@ class Ui_MainWindow(object):
         self.horizontalLayout_6.addWidget(self.airLed)
         self.verticalLayout_5.addLayout(self.horizontalLayout_6)
         self.plotWidget = QtWidgets.QWidget(self.tab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.plotWidget.sizePolicy().hasHeightForWidth())
@@ -351,19 +389,27 @@ class Ui_MainWindow(object):
         self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.checkIDLabel)
         self.checkIDCommandLE = QtWidgets.QLineEdit(self.commandsGroupBox)
         self.checkIDCommandLE.setObjectName("checkIDCommandLE")
-        self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.checkIDCommandLE)
+        self.formLayout.setWidget(
+            0, QtWidgets.QFormLayout.FieldRole, self.checkIDCommandLE
+        )
         self.lightOnLabel = QtWidgets.QLabel(self.commandsGroupBox)
         self.lightOnLabel.setObjectName("lightOnLabel")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.lightOnLabel)
         self.lightOnCommandLE = QtWidgets.QLineEdit(self.commandsGroupBox)
         self.lightOnCommandLE.setObjectName("lightOnCommandLE")
-        self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.lightOnCommandLE)
+        self.formLayout.setWidget(
+            1, QtWidgets.QFormLayout.FieldRole, self.lightOnCommandLE
+        )
         self.darkTestLabel = QtWidgets.QLabel(self.commandsGroupBox)
         self.darkTestLabel.setObjectName("darkTestLabel")
-        self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.darkTestLabel)
+        self.formLayout.setWidget(
+            2, QtWidgets.QFormLayout.LabelRole, self.darkTestLabel
+        )
         self.darkTestCommandLE = QtWidgets.QLineEdit(self.commandsGroupBox)
         self.darkTestCommandLE.setObjectName("darkTestCommandLE")
-        self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.darkTestCommandLE)
+        self.formLayout.setWidget(
+            2, QtWidgets.QFormLayout.FieldRole, self.darkTestCommandLE
+        )
         self.label_13 = QtWidgets.QLabel(self.commandsGroupBox)
         self.label_13.setObjectName("label_13")
         self.formLayout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.label_13)
@@ -383,32 +429,48 @@ class Ui_MainWindow(object):
         self.formLayout_2.setObjectName("formLayout_2")
         self.dbEndpointLabel = QtWidgets.QLabel(self.apiGroupBox)
         self.dbEndpointLabel.setObjectName("dbEndpointLabel")
-        self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.dbEndpointLabel)
+        self.formLayout_2.setWidget(
+            0, QtWidgets.QFormLayout.LabelRole, self.dbEndpointLabel
+        )
         self.dbEndpointLE = QtWidgets.QLineEdit(self.apiGroupBox)
         self.dbEndpointLE.setObjectName("dbEndpointLE")
-        self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.dbEndpointLE)
+        self.formLayout_2.setWidget(
+            0, QtWidgets.QFormLayout.FieldRole, self.dbEndpointLE
+        )
         self.mqttServerLabel = QtWidgets.QLabel(self.apiGroupBox)
         self.mqttServerLabel.setObjectName("mqttServerLabel")
-        self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.mqttServerLabel)
+        self.formLayout_2.setWidget(
+            1, QtWidgets.QFormLayout.LabelRole, self.mqttServerLabel
+        )
         self.mqttServerLE = QtWidgets.QLineEdit(self.apiGroupBox)
         self.mqttServerLE.setObjectName("mqttServerLE")
-        self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.mqttServerLE)
+        self.formLayout_2.setWidget(
+            1, QtWidgets.QFormLayout.FieldRole, self.mqttServerLE
+        )
         self.mqttTopicLabel = QtWidgets.QLabel(self.apiGroupBox)
         self.mqttTopicLabel.setObjectName("mqttTopicLabel")
-        self.formLayout_2.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.mqttTopicLabel)
+        self.formLayout_2.setWidget(
+            2, QtWidgets.QFormLayout.LabelRole, self.mqttTopicLabel
+        )
         self.mqttTopicLE = QtWidgets.QLineEdit(self.apiGroupBox)
         self.mqttTopicLE.setObjectName("mqttTopicLE")
-        self.formLayout_2.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.mqttTopicLE)
+        self.formLayout_2.setWidget(
+            2, QtWidgets.QFormLayout.FieldRole, self.mqttTopicLE
+        )
         self.verticalLayout_6.addWidget(self.apiGroupBox)
         self.horizontalLayout_9 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_9.setObjectName("horizontalLayout_9")
         self.applySettingsPB = QtWidgets.QPushButton(self.tab_3)
         self.applySettingsPB.setObjectName("applySettingsPB")
         self.horizontalLayout_9.addWidget(self.applySettingsPB)
-        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem5 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_9.addItem(spacerItem5)
         self.verticalLayout_6.addLayout(self.horizontalLayout_9)
-        spacerItem6 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem6 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout_6.addItem(spacerItem6)
         self.tabWidget.addTab(self.tab_3, "")
         self.tab_4 = QtWidgets.QWidget()
@@ -448,10 +510,20 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label_12.setText(_translate("MainWindow", "Operator"))
         self.label_15.setText(_translate("MainWindow", "Comments"))
-        self.label_5.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-weight:600;\">Ring:</span></p></body></html>"))
+        self.label_5.setText(
+            _translate(
+                "MainWindow",
+                '<html><head/><body><p><span style=" font-weight:600;">Ring:</span></p></body></html>',
+            )
+        )
         self.label.setText(_translate("MainWindow", "Ring ID"))
         self.label_2.setText(_translate("MainWindow", "Position"))
-        self.label_7.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-weight:600;\">Module:</span></p></body></html>"))
+        self.label_7.setText(
+            _translate(
+                "MainWindow",
+                '<html><head/><body><p><span style=" font-weight:600;">Module:</span></p></body></html>',
+            )
+        )
         self.label_3.setText(_translate("MainWindow", "Module ID"))
         self.mountPB.setText(_translate("MainWindow", "Mount"))
         self.unmountPB.setText(_translate("MainWindow", "Un-mount"))
@@ -463,7 +535,11 @@ class Ui_MainWindow(object):
         self.checkIDlabel.setText(_translate("MainWindow", "TextLabel"))
         self.hvONTestPB.setText(_translate("MainWindow", "Dark Tests (HV on)"))
         self.hvOFFTestPB.setText(_translate("MainWindow", "Light On Tests (HV off)"))
-        self.resultsLabel.setText(_translate("MainWindow", "<html><head/><body><p>Noise:<br/><br/></p></body></html>"))
+        self.resultsLabel.setText(
+            _translate(
+                "MainWindow", "<html><head/><body><p>Noise:<br/><br/></p></body></html>"
+            )
+        )
         self.cancelPB.setText(_translate("MainWindow", "Cancel Test"))
         self.logsPB.setText(_translate("MainWindow", "Ph2ACF logs"))
         self.showPB.setText(_translate("MainWindow", "Show Results"))
@@ -480,27 +556,49 @@ class Ui_MainWindow(object):
         self.airOFFPB.setText(_translate("MainWindow", "Air OFF"))
         self.tMaxLabel.setText(_translate("MainWindow", "Tmax: 0.0"))
         self.airLed.setStyleSheet(_translate("MainWindow", "background-color: red;"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Mount and Test"))
-        self.placeholdersHelpLabel.setText(_translate("MainWindow", "Available placeholders:\n"
-"{ring_id} - Ring ID\n"
-"{position} - Position number\n"
-"{module_id} - Module ID\n"
-"{fiber} - Selected fiber\n"
-"{power} - Selected power source\n"
-"{fiber_endpoint} - Fiber endpoint (i.e. FC7)\n"
-"\n"
-"Placeholders can be used in commands."))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Mount and Test")
+        )
+        self.placeholdersHelpLabel.setText(
+            _translate(
+                "MainWindow",
+                "Available placeholders:\n"
+                "{ring_id} - Ring ID\n"
+                "{position} - Position number\n"
+                "{module_id} - Module ID\n"
+                "{fiber} - Selected fiber\n"
+                "{power} - Selected power source\n"
+                "{fiber_endpoint} - Fiber endpoint (i.e. FC7)\n"
+                "\n"
+                "Placeholders can be used in commands.",
+            )
+        )
         self.commandsGroupBox.setTitle(_translate("MainWindow", "Test Commands"))
         self.checkIDLabel.setText(_translate("MainWindow", "Check ID Command:"))
-        self.checkIDCommandLE.setText(_translate("MainWindow", "check_id.sh --module {module_id} --position {position}"))
+        self.checkIDCommandLE.setText(
+            _translate(
+                "MainWindow", "check_id.sh --module {module_id} --position {position}"
+            )
+        )
         self.lightOnLabel.setText(_translate("MainWindow", "Light-On Test Command:"))
-        self.lightOnCommandLE.setText(_translate("MainWindow", "light_on_test.sh --ring {ring_id} --pos {position} --fiber {fiber}"))
+        self.lightOnCommandLE.setText(
+            _translate(
+                "MainWindow",
+                "light_on_test.sh --ring {ring_id} --pos {position} --fiber {fiber}",
+            )
+        )
         self.darkTestLabel.setText(_translate("MainWindow", "Dark Test Command:"))
-        self.darkTestCommandLE.setText(_translate("MainWindow", "dark_test.sh --module {module_id} --power {power}"))
+        self.darkTestCommandLE.setText(
+            _translate(
+                "MainWindow", "dark_test.sh --module {module_id} --power {power}"
+            )
+        )
         self.label_13.setText(_translate("MainWindow", "Air control command:"))
         self.airCommandLE.setText(_translate("MainWindow", "air.sh {airOn}"))
         self.label_14.setText(_translate("MainWindow", "Results URL:"))
-        self.resultsUrlLE.setText(_translate("MainWindow", "Results/html/latest/index.html"))
+        self.resultsUrlLE.setText(
+            _translate("MainWindow", "Results/html/latest/index.html")
+        )
         self.apiGroupBox.setTitle(_translate("MainWindow", "API Settings"))
         self.dbEndpointLabel.setText(_translate("MainWindow", "Database URL:"))
         self.dbEndpointLE.setText(_translate("MainWindow", "http://localhost:5000"))
@@ -509,7 +607,14 @@ class Ui_MainWindow(object):
         self.mqttTopicLabel.setText(_translate("MainWindow", "MQTT Topic:"))
         self.mqttTopicLE.setText(_translate("MainWindow", "/ar/thermal/image"))
         self.applySettingsPB.setText(_translate("MainWindow", "Apply settings"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("MainWindow", "Settings"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), _translate("MainWindow", "Commands Output"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tab_3), _translate("MainWindow", "Settings")
+        )
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tab_4),
+            _translate("MainWindow", "Commands Output"),
+        )
         self.openInBrowserPB.setText(_translate("MainWindow", "Open in System Browser"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), _translate("MainWindow", "Plots"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tab_5), _translate("MainWindow", "Plots")
+        )

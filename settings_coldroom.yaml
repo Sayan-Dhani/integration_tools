@@ -10,5 +10,6 @@ ThermalCamera:
   mqtt_topic: /thermalcamera/#
   stitch_camera: camera0
 mqtt:
-  broker: 192.168.0.45
+  # broker: 192.168.0.45
+  broker: pccmslab1
   port: 1883

@@ -51,9 +51,13 @@ class ModulesListTab(QtWidgets.QMainWindow):
 
         # Connect existing buttons
         self.select_all_button_2.clicked.connect(self.select_all_modules)
-        self.turn_lv_off_all_button.clicked.connect(self.turn_off_lv_for_selected_modules)
+        self.turn_lv_off_all_button.clicked.connect(
+            self.turn_off_lv_for_selected_modules
+        )
         self.turn_lv_on_all_button.clicked.connect(self.turn_on_lv_for_selected_modules)
-        self.turn_hv_off_all_button.clicked.connect(self.turn_off_hv_for_selected_modules)
+        self.turn_hv_off_all_button.clicked.connect(
+            self.turn_off_hv_for_selected_modules
+        )
         self.turn_hv_on_all_button.clicked.connect(self.turn_on_hv_for_selected_modules)
         self.refresh_button.clicked.connect(self.update_module_list)
 
@@ -61,10 +65,10 @@ class ModulesListTab(QtWidgets.QMainWindow):
         self.start_test_all_button.clicked.connect(self.run_test_for_selected_modules)
         self.cancel_test_all_button.clicked.connect(self.stop_all_tests)
         self.start_t_monitor_button.clicked.connect(
-            lambda: self.start_temperature_monitoring() #self.module_temperature_tab)
+            lambda: self.start_temperature_monitoring()  # self.module_temperature_tab)
         )
         self.stop_t_monitor_button.clicked.connect(
-            lambda: self.stop_temperature_monitoring() #self.module_temperature_tab)
+            lambda: self.stop_temperature_monitoring()  # self.module_temperature_tab)
         )
 
         # Tests Combobox
@@ -97,8 +101,10 @@ class ModulesListTab(QtWidgets.QMainWindow):
         url = f"{self.db_url.rstrip('/')}/{endpoint.lstrip('/')}"
         try:
             # Simulate API response for demonstration purposes
-            #result = {"sessionName": "SIMULATED_SESSION_12345"} 
-            response = requests.request(method=method.lower(), url=url, json=data if data else None)
+            # result = {"sessionName": "SIMULATED_SESSION_12345"}
+            response = requests.request(
+                method=method.lower(), url=url, json=data if data else None
+            )
             if response.status_code != 200 and response.status_code != 201:
                 logger.error(f"API Error ({response.status_code}): {response.text}")
                 return False, None
@@ -127,7 +133,9 @@ class ModulesListTab(QtWidgets.QMainWindow):
     def turn_on_lv_for_selected_modules(self):
         """Turn on LV for all selected modules."""
         if not self.marta_safe:
-            self.message_box.setText(f"MARTA not safe, cannot turn on LV:\n{self.marta_log_msg}")
+            self.message_box.setText(
+                f"MARTA not safe, cannot turn on LV:\n{self.marta_log_msg}"
+            )
             self.message_box.exec_()
             return
 
@@ -191,7 +199,9 @@ class ModulesListTab(QtWidgets.QMainWindow):
     def caen_lv_on_wrap(self, channel):
         """Wrapper for LV on with safety check."""
         if not self.marta_safe:
-            self.message_box.setText(f"MARTA not safe, cannot turn on LV:\n{self.marta_log_msg}")
+            self.message_box.setText(
+                f"MARTA not safe, cannot turn on LV:\n{self.marta_log_msg}"
+            )
             self.message_box.exec_()
             return
         else:
@@ -205,7 +215,9 @@ class ModulesListTab(QtWidgets.QMainWindow):
         """Queue HV off command."""
         self.caen.off(channel)
 
-    def populate_from_config(self, caen, modules, number_of_modules, thermal_camera_system=None):
+    def populate_from_config(
+        self, caen, modules, number_of_modules, thermal_camera_system=None
+    ):
         """Populate the moduleList QTreeWidget with module data from a config list."""
         if number_of_modules < 1:
             return
@@ -215,7 +227,10 @@ class ModulesListTab(QtWidgets.QMainWindow):
         self.thermal_camera_system = thermal_camera_system
 
         # Create all items first
-        values = {str(i): [str(i), "", "", "", "", "", "", "", "", ""] for i in range(1, number_of_modules + 1)}
+        values = {
+            str(i): [str(i), "", "", "", "", "", "", "", "", ""]
+            for i in range(1, number_of_modules + 1)
+        }
 
         # Fill the moduleList with the values first
         for i in values:
@@ -241,9 +256,13 @@ class ModulesListTab(QtWidgets.QMainWindow):
                 ) * self.MODULE_ANGULAR_WIDTH + (self.MODULE_ANGULAR_WIDTH / 2) * (
                     1 if int(module_position) <= (number_of_modules / 2) else 0
                 )
-                module_side = "13" if int(module_position) <= (number_of_modules / 2) else "24"
+                module_side = (
+                    "13" if int(module_position) <= (number_of_modules / 2) else "24"
+                )
 
-            self.mounted_modules[module_name]["angular_position"] = module_angular_position
+            self.mounted_modules[module_name][
+                "angular_position"
+            ] = module_angular_position
             self.mounted_modules[module_name]["side"] = module_side
             item_index = int(module_position) - 1
             fc7 = module_info.get("FC7", "")
@@ -271,28 +290,42 @@ class ModulesListTab(QtWidgets.QMainWindow):
 
                 # Use queued commands for buttons
                 btn_lv_on = QtWidgets.QPushButton("LV On")
-                btn_lv_on.clicked.connect(lambda checked, ch=module_info.get("LV"): self.caen_lv_on_wrap(ch))
+                btn_lv_on.clicked.connect(
+                    lambda checked, ch=module_info.get("LV"): self.caen_lv_on_wrap(ch)
+                )
 
                 btn_lv_off = QtWidgets.QPushButton("LV Off")
-                btn_lv_off.clicked.connect(lambda checked, ch=module_info.get("LV"): self.caen_lv_off(ch))
+                btn_lv_off.clicked.connect(
+                    lambda checked, ch=module_info.get("LV"): self.caen_lv_off(ch)
+                )
 
                 btn_hv_on = QtWidgets.QPushButton("HV On")
-                btn_hv_on.clicked.connect(lambda checked, ch=module_info.get("HV"): self.caen_hv_on_wrap(ch))
+                btn_hv_on.clicked.connect(
+                    lambda checked, ch=module_info.get("HV"): self.caen_hv_on_wrap(ch)
+                )
 
                 btn_hv_off = QtWidgets.QPushButton("HV Off")
-                btn_hv_off.clicked.connect(lambda checked, ch=module_info.get("HV"): self.caen_hv_off(ch))
+                btn_hv_off.clicked.connect(
+                    lambda checked, ch=module_info.get("HV"): self.caen_hv_off(ch)
+                )
 
                 # Connect test buttons to test functions
                 btn_start_test = QtWidgets.QPushButton("Test On")
-                btn_start_test.clicked.connect(lambda checked, mod=module_name: self.start_single_module_test(mod))
+                btn_start_test.clicked.connect(
+                    lambda checked, mod=module_name: self.start_single_module_test(mod)
+                )
 
                 btn_stop_test = QtWidgets.QPushButton("Test Off")
-                btn_stop_test.clicked.connect(lambda checked, mod=module_name: self.stop_single_module_test(mod))
+                btn_stop_test.clicked.connect(
+                    lambda checked, mod=module_name: self.stop_single_module_test(mod)
+                )
 
                 # Connect camera button to focus function
                 btn_focus_camera = QtWidgets.QPushButton("Camera")
                 btn_focus_camera.clicked.connect(
-                    lambda checked, mod=module_name: self.focus_camera_on_module(mod, self.thermal_camera_system)
+                    lambda checked, mod=module_name: self.focus_camera_on_module(
+                        mod, self.thermal_camera_system
+                    )
                 )
 
                 for btn in [
@@ -324,7 +357,7 @@ class ModulesListTab(QtWidgets.QMainWindow):
 
     def run_test_for_selected_modules(self):
         """Run the test command for all selected modules."""
-        #check if operator field is  non empty
+        # check if operator field is  non empty
         if not self.operator_le.text().strip():
             self._show_message("Please enter operator name before starting a test.")
             return
@@ -340,7 +373,9 @@ class ModulesListTab(QtWidgets.QMainWindow):
                 added_modules.append(module_name)
 
         if added_modules:
-            logger.debug(f"Added {len(added_modules)} modules to test queue: {added_modules}")
+            logger.debug(
+                f"Added {len(added_modules)} modules to test queue: {added_modules}"
+            )
             self.process_test_queue()
 
     def process_test_queue(self):
@@ -355,13 +390,17 @@ class ModulesListTab(QtWidgets.QMainWindow):
 
         # Get the next module from the queue
         module_name = self.test_queue.pop(0)
-        logger.debug(f"Starting test for module: {module_name} ({len(self.test_queue)} remaining in queue)")
+        logger.debug(
+            f"Starting test for module: {module_name} ({len(self.test_queue)} remaining in queue)"
+        )
         self._start_test_for_module(module_name)
 
     def _start_test_for_module(self, module_name):
         """Start the actual test execution for a module."""
         if self.current_worker is not None:
-            logger.debug(f"Cannot start test for {module_name}: another test is already running")
+            logger.debug(
+                f"Cannot start test for {module_name}: another test is already running"
+            )
             return
 
         # Update testing status
@@ -441,10 +480,10 @@ class ModulesListTab(QtWidgets.QMainWindow):
 
     def start_single_module_test(self, module_name):
         """Start test for a single module via button click."""
-        #check if operator field is  non empty
-#        if not self.operator_field.text().strip():
-#            self._show_message("Please enter operator name before starting a test.")
-            
+        # check if operator field is  non empty
+        #        if not self.operator_field.text().strip():
+        #            self._show_message("Please enter operator name before starting a test.")
+
         if self._add_module_to_queue(module_name):
             logger.debug(f"Added module {module_name} to test queue via button click")
             self.process_test_queue()
@@ -494,7 +533,10 @@ class ModulesListTab(QtWidgets.QMainWindow):
 
     def _is_module_currently_testing(self, module_name):
         """Check if a module is currently being tested."""
-        return self.current_worker and self.current_worker.placeholders.get("module_id") == module_name
+        return (
+            self.current_worker
+            and self.current_worker.placeholders.get("module_id") == module_name
+        )
 
     def _update_module_testing_status(self, module_name, status):
         """Update the testing status for a module."""
@@ -533,7 +575,9 @@ class ModulesListTab(QtWidgets.QMainWindow):
                 item.setText(8, str(module_info.get("temperature", "")))
 
                 # Update testing status with visual indicators
-                self._update_testing_status_display(item, module_info.get("testing", ""))
+                self._update_testing_status_display(
+                    item, module_info.get("testing", "")
+                )
             else:
                 # Clear testing status for empty slots
                 item.setText(9, "")
@@ -603,7 +647,11 @@ class ModulesListTab(QtWidgets.QMainWindow):
         return {
             "is_testing": self.current_worker is not None,
             "queue_length": len(self.test_queue),
-            "current_module": (self.current_worker.placeholders.get("module_id") if self.current_worker else None),
+            "current_module": (
+                self.current_worker.placeholders.get("module_id")
+                if self.current_worker
+                else None
+            ),
             "queued_modules": self.test_queue.copy(),
         }
 
@@ -618,7 +666,9 @@ class ModulesListTab(QtWidgets.QMainWindow):
         side = module_info.get("side", "Undefined")
 
         if angular_position == -1 or side == "Undefined":
-            logger.debug(f"Invalid position data for module {module_name}: position={angular_position}, side={side}")
+            logger.debug(
+                f"Invalid position data for module {module_name}: position={angular_position}, side={side}"
+            )
             return
 
         # Choose camera pair based on side
@@ -628,7 +678,9 @@ class ModulesListTab(QtWidgets.QMainWindow):
             return
 
         # Choose specific camera based on angular position
-        selected_camera = self._select_camera_for_position(camera_pair, angular_position)
+        selected_camera = self._select_camera_for_position(
+            camera_pair, angular_position
+        )
 
         logger.debug(
             f"Focusing camera {selected_camera} on module {module_name} at angular position {angular_position}° (side {side})"
@@ -640,7 +692,9 @@ class ModulesListTab(QtWidgets.QMainWindow):
             #     f"Moving camera {selected_camera} to {angular_position}° for module {module_name} (side {side})"
             # )
             # self.camera_status_message_box.exec_()
-            self._move_camera_to_angular_position(thermal_camera_system, selected_camera, angular_position)
+            self._move_camera_to_angular_position(
+                thermal_camera_system, selected_camera, angular_position
+            )
         else:
             logger.debug(f"No thermal camera system available")
 
@@ -659,10 +713,14 @@ class ModulesListTab(QtWidgets.QMainWindow):
         self.camera_status_message_box = QtWidgets.QMessageBox()
         self.camera_status_message_box.setWindowTitle("Camera Selection")
         self.camera_status_message_box.setIcon(QtWidgets.QMessageBox.Information)
-        self.camera_status_message_box.setText(f"Select camera for angular position {angular_position}°:")
+        self.camera_status_message_box.setText(
+            f"Select camera for angular position {angular_position}°:"
+        )
         for camera_name in camera_pair:
             shown_camera_name = camera_name.replace("camera", "Camera ")
-            self.camera_status_message_box.addButton(shown_camera_name, QtWidgets.QMessageBox.AcceptRole)
+            self.camera_status_message_box.addButton(
+                shown_camera_name, QtWidgets.QMessageBox.AcceptRole
+            )
         self.camera_status_message_box.setStandardButtons(QtWidgets.QMessageBox.Cancel)
         self.camera_status_message_box.setDefaultButton(QtWidgets.QMessageBox.Cancel)
         self.camera_status_message_box.setEscapeButton(QtWidgets.QMessageBox.Cancel)
@@ -693,15 +751,21 @@ class ModulesListTab(QtWidgets.QMainWindow):
         selected_camera = selected_camera.replace("Camera ", "camera")
         return camera_pair[selected_camera]
 
-    def _move_camera_to_angular_position(self, thermal_camera, camera_id, angular_position):
+    def _move_camera_to_angular_position(
+        self, thermal_camera, camera_id, angular_position
+    ):
         """Move the specified camera to the target angular position."""
         try:
             # Use the thermal camera GUI's move_camera method
             success = thermal_camera.move_camera(camera_id, angular_position)
             if success:
-                logger.debug(f"Camera {camera_id} moved successfully to {angular_position}°")
+                logger.debug(
+                    f"Camera {camera_id} moved successfully to {angular_position}°"
+                )
             else:
-                logger.debug(f"Failed to move camera {camera_id} to {angular_position}°")
+                logger.debug(
+                    f"Failed to move camera {camera_id} to {angular_position}°"
+                )
 
         except Exception as e:
             logger.debug(f"Error moving camera {camera_id}: {str(e)}")
@@ -722,7 +786,9 @@ class ModulesListTab(QtWidgets.QMainWindow):
         if not camera_pair:
             return None
 
-        selected_camera = self._select_camera_for_position(camera_pair, angular_position)
+        selected_camera = self._select_camera_for_position(
+            camera_pair, angular_position
+        )
 
         return {
             "module_name": module_name,

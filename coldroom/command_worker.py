@@ -3,6 +3,7 @@ import signal
 import os
 from PyQt5.QtCore import QThread, pyqtSignal
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -44,29 +45,29 @@ class CommandWorker(QThread):
             logger.debug(f"Running command: {expanded_command}")
             # Use Popen instead of run() to get process control
             # self.process = subprocess.Popen(
-            #     expanded_command, 
-            #     shell=True, 
-            #     stdout=subprocess.PIPE, 
+            #     expanded_command,
+            #     shell=True,
+            #     stdout=subprocess.PIPE,
             #     stderr=subprocess.PIPE,
             #     text=True,
             #     preexec_fn=os.setsid  # Create new process group for proper cleanup
             # )
             self.process = subprocess.run(
-                expanded_command, 
-                shell=True, 
-                # stdout=subprocess.PIPE, 
+                expanded_command,
+                shell=True,
+                # stdout=subprocess.PIPE,
                 # stderr=subprocess.PIPE,
                 capture_output=True,
                 text=True,
                 # preexec_fn=os.setsid  # Create new process group for proper cleanup
             )
-            
+
             if self._should_terminate:
                 self.finished.emit(False, "", "Process was terminated by user")
             else:
                 success = self.process.returncode == 0
                 self.finished.emit(success, self.process.stdout, self.process.stderr)
-                
+
         except Exception as e:
             self.finished.emit(False, "", str(e))
         finally:
@@ -79,7 +80,7 @@ class CommandWorker(QThread):
             try:
                 # Try graceful termination first
                 os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
-                
+
                 # Wait a bit for graceful shutdown
                 try:
                     self.process.wait(timeout=3)
@@ -87,7 +88,7 @@ class CommandWorker(QThread):
                     # Force kill if graceful termination didn't work
                     os.killpg(os.getpgid(self.process.pid), signal.SIGKILL)
                     self.process.wait()
-                    
+
             except (ProcessLookupError, OSError):
                 # Process already terminated
                 pass

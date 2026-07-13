@@ -20,7 +20,9 @@ class ThermalCameraTab(QtWidgets.QWidget):
 
         # Load the UI file into a QMainWindow
         self.widget = QtWidgets.QMainWindow()
-        uic.loadUi(os.path.join(os.path.dirname(__file__), "thermal_camera.ui"), self.widget)
+        uic.loadUi(
+            os.path.join(os.path.dirname(__file__), "thermal_camera.ui"), self.widget
+        )
         self.ui = self.widget  # Assign the loaded UI to self.ui
 
         # Initialize camera positions from config file
@@ -40,9 +42,11 @@ class ThermalCameraTab(QtWidgets.QWidget):
         self.update_camera_displays()
 
         # Set default temperature range to CO2 and connect signal
-        if hasattr(self.ui, 't_range_comboBox'):
+        if hasattr(self.ui, "t_range_comboBox"):
             self.ui.t_range_comboBox.setCurrentText("CO2")
-            self.ui.t_range_comboBox.currentTextChanged.connect(self.on_temperature_range_changed)
+            self.ui.t_range_comboBox.currentTextChanged.connect(
+                self.on_temperature_range_changed
+            )
 
         # Setup update timer
         self.update_timer = QTimer()
@@ -60,7 +64,9 @@ class ThermalCameraTab(QtWidgets.QWidget):
 
     def get_camera_modules_map(self):
         if self.mounted_modules is None:
-            logger.debug("Mounted modules not set, returning default camera modules map")
+            logger.debug(
+                "Mounted modules not set, returning default camera modules map"
+            )
             return {
                 "camera1": "Unknown",
                 "camera2": "Unknown",
@@ -81,7 +87,10 @@ class ThermalCameraTab(QtWidgets.QWidget):
             for camera_name, camera_offset in self.camera_positions.items():
                 camera_position = (absolute_position + camera_offset["position"]) % 360
                 module_slot = str(module_info.get("mounted_on", "-").split(";")[1])
-                if abs(module_position - camera_position) <= 20 and module_side == camera_offset["side"]:
+                if (
+                    abs(module_position - camera_position) <= 20
+                    and module_side == camera_offset["side"]
+                ):
                     camera_modules[camera_name] = f"{module_slot};{module_name}"
                     close_camera = True
                     break
@@ -116,7 +125,9 @@ class ThermalCameraTab(QtWidgets.QWidget):
                     self.save_camera_config(default_config)
                     return default_config
             else:
-                logger.info(f"Config file not found at {self.config_file}, creating with defaults")
+                logger.info(
+                    f"Config file not found at {self.config_file}, creating with defaults"
+                )
                 # Save default config to file
                 self.save_camera_config(default_config)
                 return default_config
@@ -180,22 +191,24 @@ class ThermalCameraTab(QtWidgets.QWidget):
             # Create matplotlib figure for individual cameras with adjusted size
             self.cameras_fig = Figure(figsize=(8, 5), dpi=100)  # Increased width
             self.cameras_canvas = FigureCanvas(self.cameras_fig)
-            
+
             # Create navigation toolbar for camera views
             self.cameras_toolbar = NavigationToolbar(self.cameras_canvas, self.widget)
-            
+
             # Create a widget to hold both toolbar and canvas
             camera_widget = QtWidgets.QWidget()
             camera_layout = QtWidgets.QVBoxLayout(camera_widget)
             camera_layout.addWidget(self.cameras_toolbar)
             camera_layout.addWidget(self.cameras_canvas)
             camera_layout.setContentsMargins(0, 0, 0, 0)
-            
+
             # Add the combined widget to the scene
             scene1.addWidget(camera_widget)
 
             # Create 2x2 grid for cameras with minimal spacing
-            self.cameras_axes = self.cameras_fig.subplots(2, 2, gridspec_kw={"hspace": 0.15, "wspace": 0.1})
+            self.cameras_axes = self.cameras_fig.subplots(
+                2, 2, gridspec_kw={"hspace": 0.15, "wspace": 0.1}
+            )
             self.camera_images = []
 
             # Initialize camera images with proper sizing and coordinate formatting
@@ -203,7 +216,12 @@ class ThermalCameraTab(QtWidgets.QWidget):
             for i in range(2):
                 for j in range(2):
                     ax = self.cameras_axes[i, j]
-                    img = ax.imshow(np.zeros((24, 32)), cmap="plasma", aspect="equal", interpolation="nearest")
+                    img = ax.imshow(
+                        np.zeros((24, 32)),
+                        cmap="plasma",
+                        aspect="equal",
+                        interpolation="nearest",
+                    )
                     self.camera_images.append(img)
                     camera_index += 1  # Increment for each camera
                     ax.set_title(f"Camera {camera_index}")
@@ -211,14 +229,20 @@ class ThermalCameraTab(QtWidgets.QWidget):
                     ax.set_yticks([])
 
                     # Set up coordinate formatter to show temperature values
-                    ax.format_coord = lambda x, y, ax_ref=ax, img_ref=img: self.format_coord_temperature(x, y, ax_ref, img_ref)
+                    ax.format_coord = lambda x, y, ax_ref=ax, img_ref=img: self.format_coord_temperature(
+                        x, y, ax_ref, img_ref
+                    )
 
                     # Add colorbar with proper sizing
-                    cbar = self.cameras_fig.colorbar(img, ax=ax, fraction=0.046, pad=0.04)
+                    cbar = self.cameras_fig.colorbar(
+                        img, ax=ax, fraction=0.046, pad=0.04
+                    )
                     cbar.ax.tick_params(labelsize=8)
 
             # Adjust subplot parameters to remove excess whitespace
-            self.cameras_fig.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
+            self.cameras_fig.subplots_adjust(
+                left=0.05, right=0.95, top=0.95, bottom=0.05
+            )
 
             logger.info("Camera views with navigation toolbar initialized")
 
@@ -230,22 +254,22 @@ class ThermalCameraTab(QtWidgets.QWidget):
         try:
             # Get the image data
             data = img.get_array()
-            
+
             # Convert mouse coordinates to array indices
             numrows, numcols = data.shape
             col = int(x + 0.5)
             row = int(y + 0.5)
-            
+
             # Check if coordinates are within bounds
             if 0 <= col < numcols and 0 <= row < numrows:
                 temp_value = data[row, col]
-                return f'x={col}, y={row}, T={temp_value:.1f}°C'
+                return f"x={col}, y={row}, T={temp_value:.1f}°C"
             else:
-                return f'x={x:.1f}, y={y:.1f}'
-                
+                return f"x={x:.1f}, y={y:.1f}"
+
         except Exception as e:
             logger.error(f"Error formatting coordinates: {e}")
-            return f'x={x:.1f}, y={y:.1f}'
+            return f"x={x:.1f}, y={y:.1f}"
 
     def snapshot(self):
         """Save current camera views"""
@@ -274,7 +298,7 @@ class ThermalCameraTab(QtWidgets.QWidget):
             self.ui.calibrate_PB,
             self.ui.set_abs_pos_PB,
             self.ui.export_abs_pos_PB,
-#            self.ui.get_frms_PB,
+            #            self.ui.get_frms_PB,
             self.ui.relse_mtr_PB,
             self.ui.run_PB,
             self.ui.stop_PB,
@@ -297,17 +321,25 @@ class ThermalCameraTab(QtWidgets.QWidget):
             self.ui.calibrate_PB.clicked.connect(self.calibrate)
             self.ui.set_abs_pos_PB.clicked.connect(self.set_absolute_position)
             self.ui.export_abs_pos_PB.clicked.connect(self.export_absolute_position)
- #           self.ui.get_frms_PB.clicked.connect(self.get_frames)
+            #           self.ui.get_frms_PB.clicked.connect(self.get_frames)
             self.ui.relse_mtr_PB.clicked.connect(self.release_motor)
             self.ui.run_PB.clicked.connect(self.run)
             self.ui.stop_PB.clicked.connect(self.stop)
             self.ui.snapshot_PB.clicked.connect(self.snapshot)
 
             # Connect camera coordinate setting buttons
-            self.ui.camera_set_pos_button_1.clicked.connect(lambda: self.set_camera_position(1))
-            self.ui.camera_set_pos_button_2.clicked.connect(lambda: self.set_camera_position(2))
-            self.ui.camera_set_pos_button_3.clicked.connect(lambda: self.set_camera_position(3))
-            self.ui.camera_set_pos_button_4.clicked.connect(lambda: self.set_camera_position(4))
+            self.ui.camera_set_pos_button_1.clicked.connect(
+                lambda: self.set_camera_position(1)
+            )
+            self.ui.camera_set_pos_button_2.clicked.connect(
+                lambda: self.set_camera_position(2)
+            )
+            self.ui.camera_set_pos_button_3.clicked.connect(
+                lambda: self.set_camera_position(3)
+            )
+            self.ui.camera_set_pos_button_4.clicked.connect(
+                lambda: self.set_camera_position(4)
+            )
 
             logger.info("Thermal camera signals connected")
         except Exception as e:
@@ -323,12 +355,16 @@ class ThermalCameraTab(QtWidgets.QWidget):
             try:
                 new_position = float(pos_le.text())
             except ValueError:
-                logger.error(f"Invalid position value for camera {camera_id}: {pos_le.text()}")
+                logger.error(
+                    f"Invalid position value for camera {camera_id}: {pos_le.text()}"
+                )
                 return
 
             # Validate position range (0-360 degrees)
             if not (0 <= new_position <= 360):
-                logger.error(f"Position out of range for camera {camera_id}: {new_position}. Must be 0-360°")
+                logger.error(
+                    f"Position out of range for camera {camera_id}: {new_position}. Must be 0-360°"
+                )
                 return
 
             # Update camera position offset in our data structure
@@ -358,7 +394,9 @@ class ThermalCameraTab(QtWidgets.QWidget):
             camera_modules_map = self.get_camera_modules_map()
             logger.debug(f"Camera modules map: {camera_modules_map}")
 
-            for i, (camera_name, camera_info) in enumerate(self.camera_positions.items(), 1):
+            for i, (camera_name, camera_info) in enumerate(
+                self.camera_positions.items(), 1
+            ):
                 # Calculate effective position based on current system position and camera offset
                 camera_offset = camera_info["position"]
                 effective_position = (current_system_pos + camera_offset) % 360
@@ -404,7 +442,9 @@ class ThermalCameraTab(QtWidgets.QWidget):
             absolute_position = absolute_position % 360
 
             logger.info(f"Moving camera {camera_id} to target {target_angle}°")
-            logger.info(f"Camera offset: {camera_offset}°, calculated absolute position: {absolute_position}°")
+            logger.info(
+                f"Camera offset: {camera_offset}°, calculated absolute position: {absolute_position}°"
+            )
 
             # Use the go_to function to move to the calculated absolute position
             if self.system._thermalcamera:
@@ -414,7 +454,9 @@ class ThermalCameraTab(QtWidgets.QWidget):
                 # Wait a moment for the system to update (you might want to make this more robust)
                 self._update_all_camera_positions_after_move(absolute_position)
 
-                logger.info(f"Camera {camera_id} moved to target position {target_angle}°")
+                logger.info(
+                    f"Camera {camera_id} moved to target position {target_angle}°"
+                )
                 return True
             else:
                 logger.error("Thermal camera system not available")
@@ -473,7 +515,9 @@ class ThermalCameraTab(QtWidgets.QWidget):
                 logger.error(f"Invalid camera ID: {camera_id}")
                 return None
         except Exception as e:
-            logger.error(f"Error calculating effective position for camera {camera_id}: {e}")
+            logger.error(
+                f"Error calculating effective position for camera {camera_id}: {e}"
+            )
             return None
 
     def update_status(self):
@@ -495,7 +539,9 @@ class ThermalCameraTab(QtWidgets.QWidget):
                 "background-color: green;" if streaming else "background-color: red;"
             )
             running = status.get("running", False)
-            self.ui.run_stat_flg.setStyleSheet("background-color: green;" if running else "background-color: red;")
+            self.ui.run_stat_flg.setStyleSheet(
+                "background-color: green;" if running else "background-color: red;"
+            )
 
             switch_state = status.get("switch_state", False)
             self.ui.switch_state_flag.setStyleSheet(
@@ -524,7 +570,9 @@ class ThermalCameraTab(QtWidgets.QWidget):
                 marta_status = self.system.status.get("marta", {})
                 co2_temp = float(marta_status.get("TT06_CO2", 0.0))
             except (ValueError, TypeError):
-                logger.warning("Could not get CO2 temperature from MARTA status, using default range")
+                logger.warning(
+                    "Could not get CO2 temperature from MARTA status, using default range"
+                )
                 co2_temp = 0.0
 
             # Calculate colorbar range: CO2 temp to CO2 temp + 20
@@ -532,7 +580,9 @@ class ThermalCameraTab(QtWidgets.QWidget):
             colorbar_max = co2_temp + 15.0
 
             # Update individual camera views
-            for i, (camera_name, image_data) in enumerate(self.system._thermalcamera._images.items()):
+            for i, (camera_name, image_data) in enumerate(
+                self.system._thermalcamera._images.items()
+            ):
                 if isinstance(image_data, np.ndarray):
                     # Convert to float if needed
                     if image_data.dtype != np.float64:
@@ -552,7 +602,12 @@ class ThermalCameraTab(QtWidgets.QWidget):
                     cbar = self.camera_images[i].colorbar
                     if cbar is not None:
                         cbar.set_ticks(np.linspace(colorbar_min, colorbar_max, 5))
-                        cbar.set_ticklabels([f"{temp:.1f}°C" for temp in np.linspace(colorbar_min, colorbar_max, 5)])
+                        cbar.set_ticklabels(
+                            [
+                                f"{temp:.1f}°C"
+                                for temp in np.linspace(colorbar_min, colorbar_max, 5)
+                            ]
+                        )
 
             # Draw camera canvas
             self.cameras_canvas.draw()
@@ -568,7 +623,9 @@ class ThermalCameraTab(QtWidgets.QWidget):
         """Update camera images using automatic scaling based on image data"""
         try:
             # Update individual camera views with auto-scaling
-            for i, (camera_name, image_data) in enumerate(self.system._thermalcamera._images.items()):
+            for i, (camera_name, image_data) in enumerate(
+                self.system._thermalcamera._images.items()
+            ):
                 if isinstance(image_data, np.ndarray):
                     # Convert to float if needed
                     if image_data.dtype != np.float64:
@@ -590,7 +647,9 @@ class ThermalCameraTab(QtWidgets.QWidget):
                     cbar = self.camera_images[i].colorbar
                     if cbar is not None:
                         cbar.set_ticks(np.linspace(vmin, vmax, 5))
-                        cbar.set_ticklabels([f"{temp:.1f}°C" for temp in np.linspace(vmin, vmax, 5)])
+                        cbar.set_ticklabels(
+                            [f"{temp:.1f}°C" for temp in np.linspace(vmin, vmax, 5)]
+                        )
 
             # Draw camera canvas
             self.cameras_canvas.draw()
@@ -608,10 +667,12 @@ class ThermalCameraTab(QtWidgets.QWidget):
         """
         try:
             self.use_co2_scaling = use_co2_scale
-            logger.info(f"Camera scaling mode set to: {'CO2 temperature range' if use_co2_scale else 'Auto-scale'}")
+            logger.info(
+                f"Camera scaling mode set to: {'CO2 temperature range' if use_co2_scale else 'Auto-scale'}"
+            )
 
             # Update the ComboBox to reflect the change
-            if hasattr(self.ui, 't_range_comboBox'):
+            if hasattr(self.ui, "t_range_comboBox"):
                 combo_text = "CO2" if use_co2_scale else "Auto"
                 self.ui.t_range_comboBox.setCurrentText(combo_text)
 
@@ -653,8 +714,14 @@ class ThermalCameraTab(QtWidgets.QWidget):
         try:
             angle = float(self.ui.ip_DAngle_LE.text())
             if self.system._thermalcamera:
-                direction = "bw" if self.ui.direction_combo.currentText() == "Clockwise" else "fw"
-                self.system._thermalcamera.rotate({"angle": angle, "direction": direction})
+                direction = (
+                    "bw"
+                    if self.ui.direction_combo.currentText() == "Clockwise"
+                    else "fw"
+                )
+                self.system._thermalcamera.rotate(
+                    {"angle": angle, "direction": direction}
+                )
                 logger.info(f"Rotating camera by {angle} degrees")
         except ValueError:
             logger.error("Invalid angle value")
@@ -680,8 +747,14 @@ class ThermalCameraTab(QtWidgets.QWidget):
             # Use ip_angle_LE_2 which contains the 90-degree angle input
             limit = float(self.ui.ip_angle_LE_2.text())
             if self.system._thermalcamera:
-                direction = "bw" if self.ui.direction_combo.currentText() == "Clockwise" else "fw"
-                self.system._thermalcamera.calibrate({"prudence": limit, "direction": direction})
+                direction = (
+                    "bw"
+                    if self.ui.direction_combo.currentText() == "Clockwise"
+                    else "fw"
+                )
+                self.system._thermalcamera.calibrate(
+                    {"prudence": limit, "direction": direction}
+                )
                 logger.info(f"Calibrating camera with limit {limit} degrees")
                 self.update_camera_displays()
         except ValueError:

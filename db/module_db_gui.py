@@ -79,7 +79,9 @@ class Ui_ModuleDBWidget(object):
         self.selectModulePB = QtWidgets.QPushButton(self.tab_2)
         self.selectModulePB.setObjectName("selectModulePB")
         self.horizontalLayout_10.addWidget(self.selectModulePB)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_10.addItem(spacerItem)
         self.viewDetailsPB = QtWidgets.QPushButton(self.tab_2)
         self.viewDetailsPB.setObjectName("viewDetailsPB")
@@ -141,23 +143,39 @@ class Ui_ModuleDBWidget(object):
         self.spacerCB_2.setItemText(0, _translate("ModuleDBWidget", "any"))
         self.label_11.setText(_translate("ModuleDBWidget", "Status:"))
         self.spacerCB_3.setItemText(0, _translate("ModuleDBWidget", "any"))
-        self.spacerCB_3.setItemText(1, _translate("ModuleDBWidget", "Ready For Mounting"))
+        self.spacerCB_3.setItemText(
+            1, _translate("ModuleDBWidget", "Ready For Mounting")
+        )
         self.spacerCB_3.setItemText(2, _translate("ModuleDBWidget", "Mounted"))
         self.spacerCB_3.setItemText(3, _translate("ModuleDBWidget", "To Be Tested"))
         self.treeWidget.headerItem().setText(0, _translate("ModuleDBWidget", "Name"))
-        self.treeWidget.headerItem().setText(1, _translate("ModuleDBWidget", "Inventory Slot"))
+        self.treeWidget.headerItem().setText(
+            1, _translate("ModuleDBWidget", "Inventory Slot")
+        )
         self.treeWidget.headerItem().setText(2, _translate("ModuleDBWidget", "Speed"))
         self.treeWidget.headerItem().setText(3, _translate("ModuleDBWidget", "Spacer"))
         self.treeWidget.headerItem().setText(4, _translate("ModuleDBWidget", "Status"))
-        self.treeWidget.headerItem().setText(5, _translate("ModuleDBWidget", "Connections"))
-        self.treeWidget.headerItem().setText(6, _translate("ModuleDBWidget", "Description"))
-        self.treeWidget.headerItem().setText(7, _translate("ModuleDBWidget", "Mounted_on"))
+        self.treeWidget.headerItem().setText(
+            5, _translate("ModuleDBWidget", "Connections")
+        )
+        self.treeWidget.headerItem().setText(
+            6, _translate("ModuleDBWidget", "Description")
+        )
+        self.treeWidget.headerItem().setText(
+            7, _translate("ModuleDBWidget", "Mounted_on")
+        )
         self.selectModulePB.setText(_translate("ModuleDBWidget", "<-- Select Module"))
         self.viewDetailsPB.setText(_translate("ModuleDBWidget", "View Details -->"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("ModuleDBWidget", "Module Inventory"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tab_2),
+            _translate("ModuleDBWidget", "Module Inventory"),
+        )
         self.detailsTree.headerItem().setText(0, _translate("ModuleDBWidget", "Field"))
         self.detailsTree.headerItem().setText(1, _translate("ModuleDBWidget", "Value"))
         self.editDetailsButton.setText(_translate("ModuleDBWidget", "Edit Selected"))
         self.saveDetailsButton.setText(_translate("ModuleDBWidget", "Save Changes"))
         self.disconnectButton.setText(_translate("ModuleDBWidget", "Disconnect"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.moduleDetailsTab), _translate("ModuleDBWidget", "Module Details"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.moduleDetailsTab),
+            _translate("ModuleDBWidget", "Module Details"),
+        )

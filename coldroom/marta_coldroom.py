@@ -56,7 +56,9 @@ class MartaColdRoomMQTTClient:
 
         # Connect to broker
         try:
-            logger.debug(f"Connecting to MQTT broker at {self._system.BROKER}:{self._system.PORT}")
+            logger.debug(
+                f"Connecting to MQTT broker at {self._system.BROKER}:{self._system.PORT}"
+            )
             self._client.connect(self._system.BROKER, self._system.PORT, keepalive=60)
             logger.debug("MQTT client connected successfully")
         except Exception as e:
@@ -121,7 +123,9 @@ class MartaColdRoomMQTTClient:
         elif msg.topic.startswith(self.TOPIC_COLDROOM_AIR):  # Add Coldroom Air topic
             logger.info("Processing Coldroom Air message")
             self.handle_air_bypass_message(msg.payload)
-            logger.info(f"Updated Coldroom Air status: {self._coldroom_state.get('air_bypass_status', None)}")
+            logger.info(
+                f"Updated Coldroom Air status: {self._coldroom_state.get('air_bypass_status', None)}"
+            )
 
         # Handle MARTA messages
         elif msg.topic.startswith(self.TOPIC_BASE_MARTA):  # Add MARTA topic
@@ -155,7 +159,9 @@ class MartaColdRoomMQTTClient:
 
         # Safety checks
         if self._system.has_valid_status():
-            self._system.safety_flags["door_locked"] = not check_dew_point(self._system.status)
+            self._system.safety_flags["door_locked"] = not check_dew_point(
+                self._system.status
+            )
             self._system.safety_flags["sleep"] = check_door_status(self._system.status)
             self._system.safety_flags["door_safe"] = check_door_safe_to_open(
                 self._system.status, self._system.status.get("caen", {}), {"HV": []}
@@ -262,19 +268,33 @@ class MartaColdRoomMQTTClient:
             # Update cleanroom status based on topic
             if isinstance(data, dict):
                 if "temperature" in data or "temp" in data:
-                    self._cleanroom_status["temperature"] = float(data.get("temperature", data.get("temp")))
-                    logger.info(f"Updated temperature: {self._cleanroom_status['temperature']}")
+                    self._cleanroom_status["temperature"] = float(
+                        data.get("temperature", data.get("temp"))
+                    )
+                    logger.info(
+                        f"Updated temperature: {self._cleanroom_status['temperature']}"
+                    )
                 if "RH" in data or "humidity" in data:
-                    self._cleanroom_status["humidity"] = float(data.get("RH", data.get("humidity")))
-                    logger.info(f"Updated humidity: {self._cleanroom_status['humidity']}")
+                    self._cleanroom_status["humidity"] = float(
+                        data.get("RH", data.get("humidity"))
+                    )
+                    logger.info(
+                        f"Updated humidity: {self._cleanroom_status['humidity']}"
+                    )
                 if "dewpoint" in data:
                     self._cleanroom_status["dewpoint"] = float(data["dewpoint"])
-                    logger.info(f"Updated dewpoint: {self._cleanroom_status['dewpoint']}")
+                    logger.info(
+                        f"Updated dewpoint: {self._cleanroom_status['dewpoint']}"
+                    )
                 if "Pressure" in data:
                     self._cleanroom_status["pressure"] = float(data["Pressure"])
-                    logger.info(f"Updated pressure: {self._cleanroom_status['pressure']}")
+                    logger.info(
+                        f"Updated pressure: {self._cleanroom_status['pressure']}"
+                    )
 
-                self._cleanroom_status["last_update"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                self._cleanroom_status["last_update"] = (
+                    datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                )
                 self._cleanroom_last_update_timer = time.time()
                 self._cleanroom_last_update_elapsed_time = 0
 
@@ -294,10 +314,14 @@ class MartaColdRoomMQTTClient:
             # Update control states
             if "ch_temperature" in self._coldroom_state:
                 if "status" in self._coldroom_state["ch_temperature"]:
-                    self._coldroom_state["temperature_control"] = self._coldroom_state["ch_temperature"]["status"]
+                    self._coldroom_state["temperature_control"] = self._coldroom_state[
+                        "ch_temperature"
+                    ]["status"]
             if "ch_humidity" in self._coldroom_state:
                 if "status" in self._coldroom_state["ch_humidity"]:
-                    self._coldroom_state["humidity_control"] = self._coldroom_state["ch_humidity"]["status"]
+                    self._coldroom_state["humidity_control"] = self._coldroom_state[
+                        "ch_humidity"
+                    ]["status"]
             self._system.update_status({"coldroom": self._coldroom_state})
         except Exception as e:
             logger.error(f"Error parsing Coldroom state message: {e}")
@@ -307,7 +331,9 @@ class MartaColdRoomMQTTClient:
             data = json.loads(payload)
             logger.debug(f"Parsed Coldroom air bypass data: {data}")
             self._dry_air_bypass_status = data["apower"] > 0.1
-            self._system._status["coldroomair"]["air_bypass_status"] = self._dry_air_bypass_status
+            self._system._status["coldroomair"][
+                "air_bypass_status"
+            ] = self._dry_air_bypass_status
         except Exception as e:
             logger.error(f"Error parsing Coldroom air bypass message: {e}")
 
@@ -358,7 +384,9 @@ class MartaColdRoomMQTTClient:
             if response.status_code == 200:
                 logger.info("Dry air bypass turned ON successfully")
             else:
-                logger.error(f"Failed to turn ON dry air bypass, status code: {response.status_code}")
+                logger.error(
+                    f"Failed to turn ON dry air bypass, status code: {response.status_code}"
+                )
         except Exception as e:
             logger.error(f"Error turning ON dry air bypass: {e}")
 
@@ -369,7 +397,9 @@ class MartaColdRoomMQTTClient:
             if response.status_code == 200:
                 logger.info("Dry air bypass turned OFF successfully")
             else:
-                logger.error(f"Failed to turn OFF dry air bypass, status code: {response.status_code}")
+                logger.error(
+                    f"Failed to turn OFF dry air bypass, status code: {response.status_code}"
+                )
         except Exception as e:
             logger.error(f"Error turning OFF dry air bypass: {e}")
 
@@ -388,4 +418,6 @@ class MartaColdRoomMQTTClient:
 
     @property
     def door_locked(self):
-        return self._system.safety_flags.get("door_locked", True)  # Default to True (safe) if not available
+        return self._system.safety_flags.get(
+            "door_locked", True
+        )  # Default to True (safe) if not available

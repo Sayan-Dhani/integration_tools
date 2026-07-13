@@ -1,0 +1,12 @@
+camera1:
+  position: 0
+  side: Front
+camera2:
+  position: 0
+  side: Back
+camera3:
+  position: 180
+  side: Front
+camera4:
+  position: 180
+  side: Back

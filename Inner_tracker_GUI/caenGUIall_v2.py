@@ -29,33 +29,29 @@ class tcp_util:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.settimeout(0.5)
         self.headerBytes = 4
-        
+
         self.connectSocket()
-        pass    
+        pass
 
     def __del__(self):
-        """Destructor, closes socket
-        """
+        """Destructor, closes socket"""
         try:
             self.closeSocket()
         except Exception:
             pass
 
     def connectSocket(self):
-        """Connects socket
-        """
+        """Connects socket"""
         self.socket.connect((self.ip, self.port))
         pass
 
     def closeSocket(self):
-        """Closes socket connection
-        """
+        """Closes socket connection"""
         self.socket.close()
         pass
 
     def sendMessage(self, message):
-        """Encodes message and sends it on socket
-        """
+        """Encodes message and sends it on socket"""
         encodedMessage = self.encodeMessage(message)
         self.socket.send(encodedMessage)
         pass
@@ -82,7 +78,7 @@ class CAENQueryThread(QThread):
     """
 
     dataReady = pyqtSignal(dict)  # Emitted when parsed data is ready
-    error = pyqtSignal(str)       # Emitted when an error occurs
+    error = pyqtSignal(str)  # Emitted when an error occurs
 
     def __init__(self, ip="192.168.0.45", port=7000):
         super().__init__()
@@ -91,7 +87,7 @@ class CAENQueryThread(QThread):
         self.message = None
         self.receive = False
         self.running = True
-        self.queue = []         # list of messages to send
+        self.queue = []  # list of messages to send
         self.receiveQueue = []  # list of booleans: whether to read a reply
 
     def setup_query(self, message, receive=False):
@@ -103,11 +99,11 @@ class CAENQueryThread(QThread):
         """Stop the thread"""
         self.running = False
         self.wait()
-        
+
     def run(self):
         """Thread's main method : Process the queued messages."""
         while self.queue:
-            #create lock
+            # create lock
             self.message = self.queue.pop(0)
             self.receive = self.receiveQueue.pop(0)
             try:
@@ -155,7 +151,7 @@ class caenGUI8LV(QWidget):
 
     def __init__(self, ip="192.168.0.45", port=7000):
         super().__init__()
-    
+
         # Create timer for periodic update
         self.channels = []
         self.led = {}
@@ -172,11 +168,11 @@ class caenGUI8LV(QWidget):
         # Timer to periodically request status
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_status)
-        
+
         # build the UI
         self.initUI()
-        
-        #start periodic status update
+
+        # start periodic status update
         self.timer.start(2000)  # ms
 
     def change_host(self, ip, port):
@@ -199,14 +195,14 @@ class caenGUI8LV(QWidget):
 
         self.main_layout = QVBoxLayout()
         self.setLayout(self.main_layout)
-        
+
         # Safety checkbox to enable/disable current setting
         self.enable_current_checkbox = QCheckBox("Enable current setting (safety)")
         self.enable_current_checkbox.stateChanged.connect(self.toggle_current_setting)
         self.main_layout.addWidget(self.enable_current_checkbox)
 
         # Define 8 LV channels: LV15.1 ... LV15.8
-        for i in range(1,9):
+        for i in range(1, 9):
             self.channels.append(f"LV15.{i}")
 
         for channel in self.channels:
@@ -217,7 +213,7 @@ class caenGUI8LV(QWidget):
             ch_label = QLabel(channel + ":")
             ch_label.setFont(QFont("Arial", 10))
             hlayout.addWidget(ch_label)
-            
+
             # Current set text box
             current_input = QLineEdit()
             current_input.setFixedWidth(60)
@@ -228,27 +224,21 @@ class caenGUI8LV(QWidget):
             # 'Set I' button
             btn_setI = QPushButton("Set I", self)
             btn_setI.setMinimumWidth(50)
-            btn_setI.clicked.connect(
-                lambda checked, ch=channel: self.set_current(ch)
-            )
-            btn_setI.setEnabled(False)               # ← DISABLE by default
-            self.setI_buttons[channel] = btn_setI    # ← STORE button
+            btn_setI.clicked.connect(lambda checked, ch=channel: self.set_current(ch))
+            btn_setI.setEnabled(False)  # ← DISABLE by default
+            self.setI_buttons[channel] = btn_setI  # ← STORE button
             hlayout.addWidget(btn_setI)
-            
+
             # ON button
             btn_on = QPushButton("ON", self)
             btn_on.setMinimumWidth(40)
-            btn_on.clicked.connect(
-                lambda checked, ch=channel: self.turn_on(ch)
-            )
+            btn_on.clicked.connect(lambda checked, ch=channel: self.turn_on(ch))
             hlayout.addWidget(btn_on)
 
             # OFF button
             btn_off = QPushButton("OFF", self)
             btn_off.setMinimumWidth(40)
-            btn_off.clicked.connect(
-                lambda checked, ch=channel: self.turn_off(ch)
-            )
+            btn_off.clicked.connect(lambda checked, ch=channel: self.turn_off(ch))
             hlayout.addWidget(btn_off)
 
             # Voltage/Current label
@@ -264,15 +254,15 @@ class caenGUI8LV(QWidget):
             hlayout.addWidget(self.led[channel])
 
         self.show()
-        
+
     def toggle_current_setting(self, state):
         """
         Enable or disable all 'Set I' buttons based on the safety checkbox.
         """
-        enabled = (state == Qt.Checked)
+        enabled = state == Qt.Checked
         for btn in self.setI_buttons.values():
             btn.setEnabled(enabled)
-        
+
     # ---------------- Periodic status update ----------------
 
     @pyqtSlot()
@@ -282,7 +272,7 @@ class caenGUI8LV(QWidget):
         ask the server for the status of all channels.
         """
         print("Update")
-        
+
         message = "GetStatus,PowerSupplyId:caen"
         self.queryThread.setup_query(message, True)
 
@@ -380,9 +370,7 @@ class caenGUI8LV(QWidget):
             return
 
         # Adjust "SetCurrent" to your actual server protocol if needed.
-        message = (
-            f"SetCurrent,PowerSupplyId:caen,ChannelId:{channel},Current:{value}"
-        )
+        message = f"SetCurrent,PowerSupplyId:caen,ChannelId:{channel},Current:{value}"
         print(message)
         self.queryThread.setup_query(message, receive=False)
 
@@ -395,7 +383,9 @@ class caenGUI8LV(QWidget):
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="INNER TRACKER CAEN GUI - 8 LV Channels")
+    parser = argparse.ArgumentParser(
+        description="INNER TRACKER CAEN GUI - 8 LV Channels"
+    )
     parser.add_argument(
         "--ip",
         type=str,

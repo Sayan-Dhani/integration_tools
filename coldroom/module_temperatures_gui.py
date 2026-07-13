@@ -24,8 +24,12 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
         uic.loadUi(ui_file, self)
 
         # Initialize scaling modes - default to CO2 scaling
-        self.use_co2_scaling_stitched = True  # Default to CO2 scaling for stitched views
-        self.use_co2_scaling_temperature_plot = True  # Default to CO2 scaling for temperature plot
+        self.use_co2_scaling_stitched = (
+            True  # Default to CO2 scaling for stitched views
+        )
+        self.use_co2_scaling_temperature_plot = (
+            True  # Default to CO2 scaling for temperature plot
+        )
 
         # Initialize stitching-related attributes
         # Initialize camera-specific FOV values (default to 20 degrees for all cameras)
@@ -51,7 +55,9 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
         # Set default temperature range to CO2 and connect signal
         if hasattr(self, "t_range_comboBox"):
             self.t_range_comboBox.setCurrentText("CO2")
-            self.t_range_comboBox.currentTextChanged.connect(self.on_temperature_range_changed)
+            self.t_range_comboBox.currentTextChanged.connect(
+                self.on_temperature_range_changed
+            )
 
         # Setup update timer
         self.update_timer = QTimer()
@@ -118,7 +124,9 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                 logger.error(f"Invalid camera ID: {camera_id}")
                 return None
         except Exception as e:
-            logger.error(f"Error calculating effective position for camera {camera_id}: {e}")
+            logger.error(
+                f"Error calculating effective position for camera {camera_id}: {e}"
+            )
             return None
 
     def validate_camera_config(self, config):
@@ -154,7 +162,12 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
             # Get the tab widget from the UI
             self.stitched_tab_widget = self.findChild(QtWidgets.QTabWidget, "tabWidget")
 
-            for graphics_view in [self.graphics_1, self.graphics_2, self.graphics_3, self.graphics_4]:
+            for graphics_view in [
+                self.graphics_1,
+                self.graphics_2,
+                self.graphics_3,
+                self.graphics_4,
+            ]:
                 scene = QtWidgets.QGraphicsScene()
                 graphics_view.setScene(scene)
 
@@ -187,7 +200,11 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                 )
 
                 # Set up coordinate formatter for stitched views
-                ax.format_coord = lambda x, y, ax_ref=ax, img_ref=img: self.format_coord_stitched(x, y, ax_ref, img_ref)
+                ax.format_coord = (
+                    lambda x, y, ax_ref=ax, img_ref=img: self.format_coord_stitched(
+                        x, y, ax_ref, img_ref
+                    )
+                )
 
                 # Set up the axes for degrees
                 ax.set_xticks(np.linspace(0, 360, 9))  # Ticks every 45 degrees
@@ -248,7 +265,9 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                 os.makedirs(save_dir)
 
             # Save stitched images
-            for i, (fig, canvas) in enumerate(zip(self.stitched_figs, self.stitched_canvases)):
+            for i, (fig, canvas) in enumerate(
+                zip(self.stitched_figs, self.stitched_canvases)
+            ):
                 filename = f"{base_filename}_view_camera{i+1}.png"
                 filename = os.path.join(save_dir, filename)
                 fig.savefig(filename, dpi=300)
@@ -328,21 +347,33 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                 color = colors[i]
 
                 # Create lines for max and min temperatures
-                (max_line,) = self.temp_ax.plot([], [], "o-", color=color, label=f"{camera_name} Max", markersize=3)
+                (max_line,) = self.temp_ax.plot(
+                    [], [], "o-", color=color, label=f"{camera_name} Max", markersize=3
+                )
                 (min_line,) = self.temp_ax.plot(
-                    [], [], "s--", color=color, label=f"{camera_name} Min", markersize=3, alpha=0.7
+                    [],
+                    [],
+                    "s--",
+                    color=color,
+                    label=f"{camera_name} Min",
+                    markersize=3,
+                    alpha=0.7,
                 )
 
                 self.temp_lines[f"{camera_name}_max"] = max_line
                 self.temp_lines[f"{camera_name}_min"] = min_line
 
             # Add legend with better positioning to account for module annotations
-            self.temp_ax.legend(bbox_to_anchor=(1.0, 0.5), loc="center left", fontsize=8, frameon=False)
+            self.temp_ax.legend(
+                bbox_to_anchor=(1.0, 0.5), loc="center left", fontsize=8, frameon=False
+            )
 
             # Adjust layout to make room for legend and module annotations
             self.temp_fig.subplots_adjust(right=0.82, top=0.85)
 
-            logger.info("Temperature plot tab with navigation toolbar added successfully")
+            logger.info(
+                "Temperature plot tab with navigation toolbar added successfully"
+            )
 
         except Exception as e:
             logger.error(f"Error setting up temperature plot: {e}")
@@ -369,21 +400,33 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
             y_max = co2_temp + 20.0
 
             # Get temperature data from thermal camera
-            if hasattr(self.system._thermalcamera, "_stitching_max_temperature") and hasattr(
-                self.system._thermalcamera, "_stitching_min_temperature"
-            ):
+            if hasattr(
+                self.system._thermalcamera, "_stitching_max_temperature"
+            ) and hasattr(self.system._thermalcamera, "_stitching_min_temperature"):
 
                 for i in range(4):
-                    camera_name = f"camera{i}"  # This matches the thermal_camera.py naming
+                    camera_name = (
+                        f"camera{i}"  # This matches the thermal_camera.py naming
+                    )
                     camera_display_name = f"camera{i+1}"  # This matches the GUI naming
 
                     if (
-                        camera_name in self.system._thermalcamera._stitching_max_temperature
-                        and camera_name in self.system._thermalcamera._stitching_min_temperature
+                        camera_name
+                        in self.system._thermalcamera._stitching_max_temperature
+                        and camera_name
+                        in self.system._thermalcamera._stitching_min_temperature
                     ):
 
-                        max_temp_data = self.system._thermalcamera._stitching_max_temperature[camera_name]
-                        min_temp_data = self.system._thermalcamera._stitching_min_temperature[camera_name]
+                        max_temp_data = (
+                            self.system._thermalcamera._stitching_max_temperature[
+                                camera_name
+                            ]
+                        )
+                        min_temp_data = (
+                            self.system._thermalcamera._stitching_min_temperature[
+                                camera_name
+                            ]
+                        )
 
                         if max_temp_data and min_temp_data:
                             # Extract positions and temperatures
@@ -392,12 +435,17 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                             min_temps = []
 
                             # Get all positions that have both max and min data
-                            common_positions = set(max_temp_data.keys()) & set(min_temp_data.keys())
+                            common_positions = set(max_temp_data.keys()) & set(
+                                min_temp_data.keys()
+                            )
 
                             for pos in sorted(common_positions, key=float):
                                 # Apply camera position offset to get effective position
                                 effective_position = (
-                                    float(pos) + self.camera_positions[camera_display_name]["position"]
+                                    float(pos)
+                                    + self.camera_positions[camera_display_name][
+                                        "position"
+                                    ]
                                 ) % 360
 
                                 positions.append(effective_position)
@@ -409,8 +457,12 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                                 filtered_max_temps = self.simple_spike_filter(max_temps)
 
                                 # Update the plot lines
-                                self.temp_lines[f"{camera_display_name}_max"].set_data(positions, filtered_max_temps)
-                                self.temp_lines[f"{camera_display_name}_min"].set_data(positions, min_temps)
+                                self.temp_lines[f"{camera_display_name}_max"].set_data(
+                                    positions, filtered_max_temps
+                                )
+                                self.temp_lines[f"{camera_display_name}_min"].set_data(
+                                    positions, min_temps
+                                )
 
             # Set fixed Y-axis range based on CO2 temperature
             self.temp_ax.set_ylim(y_min, y_max)
@@ -437,21 +489,33 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
             # Get temperature data and update plot lines
             all_temps = []
 
-            if hasattr(self.system._thermalcamera, "_stitching_max_temperature") and hasattr(
-                self.system._thermalcamera, "_stitching_min_temperature"
-            ):
+            if hasattr(
+                self.system._thermalcamera, "_stitching_max_temperature"
+            ) and hasattr(self.system._thermalcamera, "_stitching_min_temperature"):
 
                 for i in range(4):
-                    camera_name = f"camera{i}"  # This matches the thermal_camera.py naming
+                    camera_name = (
+                        f"camera{i}"  # This matches the thermal_camera.py naming
+                    )
                     camera_display_name = f"camera{i+1}"  # This matches the GUI naming
 
                     if (
-                        camera_name in self.system._thermalcamera._stitching_max_temperature
-                        and camera_name in self.system._thermalcamera._stitching_min_temperature
+                        camera_name
+                        in self.system._thermalcamera._stitching_max_temperature
+                        and camera_name
+                        in self.system._thermalcamera._stitching_min_temperature
                     ):
 
-                        max_temp_data = self.system._thermalcamera._stitching_max_temperature[camera_name]
-                        min_temp_data = self.system._thermalcamera._stitching_min_temperature[camera_name]
+                        max_temp_data = (
+                            self.system._thermalcamera._stitching_max_temperature[
+                                camera_name
+                            ]
+                        )
+                        min_temp_data = (
+                            self.system._thermalcamera._stitching_min_temperature[
+                                camera_name
+                            ]
+                        )
 
                         if max_temp_data and min_temp_data:
                             # Extract positions and temperatures
@@ -460,12 +524,17 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                             min_temps = []
 
                             # Get all positions that have both max and min data
-                            common_positions = set(max_temp_data.keys()) & set(min_temp_data.keys())
+                            common_positions = set(max_temp_data.keys()) & set(
+                                min_temp_data.keys()
+                            )
 
                             for pos in sorted(common_positions, key=float):
                                 # Apply camera position offset to get effective position
                                 effective_position = (
-                                    float(pos) + self.camera_positions[camera_display_name]["position"]
+                                    float(pos)
+                                    + self.camera_positions[camera_display_name][
+                                        "position"
+                                    ]
                                 ) % 360
 
                                 positions.append(effective_position)
@@ -477,8 +546,12 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                                 filtered_max_temps = self.simple_spike_filter(max_temps)
 
                                 # Update the plot lines
-                                self.temp_lines[f"{camera_display_name}_max"].set_data(positions, filtered_max_temps)
-                                self.temp_lines[f"{camera_display_name}_min"].set_data(positions, min_temps)
+                                self.temp_lines[f"{camera_display_name}_max"].set_data(
+                                    positions, filtered_max_temps
+                                )
+                                self.temp_lines[f"{camera_display_name}_min"].set_data(
+                                    positions, min_temps
+                                )
 
                                 # Collect all temperature values for auto-scaling
                                 all_temps.extend(filtered_max_temps)
@@ -540,7 +613,9 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                 module_side = module_info["side"]
 
                 # Get module slot information if available
-                if "mounted_on" in module_info and ";" in str(module_info["mounted_on"]):
+                if "mounted_on" in module_info and ";" in str(
+                    module_info["mounted_on"]
+                ):
                     module_slot = str(module_info["mounted_on"]).split(";")[1]
                 else:
                     module_slot = "-"
@@ -548,7 +623,9 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                 # Create annotation text with side information for clarity
                 annotation_text = f"{module_slot}:{module_name}"
 
-                logger.debug(f"Adding temperature plot annotation '{annotation_text}' at x={module_position}")
+                logger.debug(
+                    f"Adding temperature plot annotation '{annotation_text}' at x={module_position}"
+                )
 
                 # Add text annotation at the top of the plot with rotation
                 y_top = self.temp_ax.get_ylim()[1]
@@ -570,9 +647,17 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
 
                 # Add a dashed vertical line to mark the exact position
                 # Use different colors based on side for better distinction
-                line_color = "black" if module_side == "13" else "gray" if module_side == "24" else "gray"
+                line_color = (
+                    "black"
+                    if module_side == "13"
+                    else "gray" if module_side == "24" else "gray"
+                )
                 line_obj = self.temp_ax.axvline(
-                    x=module_position, color=line_color, linestyle="--", alpha=0.5, linewidth=1
+                    x=module_position,
+                    color=line_color,
+                    linestyle="--",
+                    alpha=0.5,
+                    linewidth=1,
                 )
 
                 # Mark as module annotation for easy removal
@@ -583,7 +668,9 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                     f"Added temperature plot annotation {annotation_count}: {annotation_text} at position {module_position}"
                 )
 
-            logger.info(f"Added {annotation_count} module annotations to temperature plot")
+            logger.info(
+                f"Added {annotation_count} module annotations to temperature plot"
+            )
 
             # Adjust the top margin to make room for the angled text
             current_top = self.temp_fig.subplotpars.top
@@ -609,13 +696,18 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
             next_temp = temps[i + 1]
 
             # Check if current value is very different from both neighbors
-            if abs(curr_temp - prev_temp) > max_change and abs(curr_temp - next_temp) > max_change:
+            if (
+                abs(curr_temp - prev_temp) > max_change
+                and abs(curr_temp - next_temp) > max_change
+            ):
                 # Replace with average of neighbors
                 filtered[i] = (prev_temp + next_temp) / 2
 
         return filtered
 
-    def stitch_multiple_images(self, images, positions, temp_min, temp_max, camera_name, full_coverage=360):
+    def stitch_multiple_images(
+        self, images, positions, temp_min, temp_max, camera_name, full_coverage=360
+    ):
         """Stitch multiple images from different positions into a panorama"""
         # Get dimensions of a single image
         h, w = images[0].shape
@@ -673,16 +765,22 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
 
         # Convert to uint8 for display - use actual temperature range
         if np.isclose(temp_min, temp_max):
-            temp_max = temp_min + 1.0  # Add a small difference to avoid division by zero
+            temp_max = (
+                temp_min + 1.0
+            )  # Add a small difference to avoid division by zero
 
         # Create normalized array with proper handling of NaN values
         panorama_norm = np.zeros_like(panorama)
         valid_mask = ~np.isnan(panorama)
-        panorama_norm[valid_mask] = 255 * (panorama[valid_mask] - temp_min) / (temp_max - temp_min)
+        panorama_norm[valid_mask] = (
+            255 * (panorama[valid_mask] - temp_min) / (temp_max - temp_min)
+        )
 
         # Areas without data will be black (0)
         panorama_norm = np.nan_to_num(panorama_norm, nan=0.0)  # Convert NaNs to 0
-        panorama_norm = np.clip(panorama_norm, 0, 255)  # Ensure values are in valid range
+        panorama_norm = np.clip(
+            panorama_norm, 0, 255
+        )  # Ensure values are in valid range
         panorama_norm = panorama_norm.astype(np.uint8)
 
         return panorama_norm, panorama
@@ -720,7 +818,9 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
 
             # Get stitching data from thermal camera
             if hasattr(self.system._thermalcamera, "_stitching_data"):
-                for i, (camera_name, camera_data) in enumerate(self.system._thermalcamera._stitching_data.items()):
+                for i, (camera_name, camera_data) in enumerate(
+                    self.system._thermalcamera._stitching_data.items()
+                ):
                     # add +1 to the camera name to match the UI naming
                     camera_index = int(camera_name[-1]) + 1
                     camera_name = f"camera{camera_index}"
@@ -735,12 +835,20 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                                 # Keep only the last image at this position
                                 last_img = pos_images[-1]
                                 images.append(last_img)
-                                positions.append(float(pos) + self.camera_positions[camera_name]["position"])
+                                positions.append(
+                                    float(pos)
+                                    + self.camera_positions[camera_name]["position"]
+                                )
 
                         if images:  # If we have any images to stitch
                             # Create stitched panorama using CO2 temperature range
                             panorama_norm, panorama = self.stitch_multiple_images(
-                                images, positions, colorbar_min, colorbar_max, camera_name, full_coverage=360
+                                images,
+                                positions,
+                                colorbar_min,
+                                colorbar_max,
+                                camera_name,
+                                full_coverage=360,
                             )
 
                             # Ensure the panorama is properly sized for 360 degrees
@@ -753,7 +861,9 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
 
                             # Update the stitched view with CO2-based scaling
                             self.stitched_images[camera_index - 1].set_array(panorama)
-                            self.stitched_images[camera_index - 1].set_clim(colorbar_min, colorbar_max)
+                            self.stitched_images[camera_index - 1].set_clim(
+                                colorbar_min, colorbar_max
+                            )
 
                             # Clear previous annotations and add module names
                             ax = self.stitched_axes[camera_index - 1]
@@ -764,11 +874,15 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
 
                             # Remove previous annotation lines (both module and camera position)
                             for line in ax.lines[:]:
-                                if hasattr(line, "_module_annotation") or hasattr(line, "_camera_position"):
+                                if hasattr(line, "_module_annotation") or hasattr(
+                                    line, "_camera_position"
+                                ):
                                     line.remove()
 
                             # Add camera position line (red dashed line showing current camera position)
-                            current_camera_pos = self.get_camera_effective_position(camera_index)
+                            current_camera_pos = self.get_camera_effective_position(
+                                camera_index
+                            )
                             if current_camera_pos is not None:
                                 camera_line = ax.axvline(
                                     x=current_camera_pos,
@@ -783,16 +897,27 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
 
                             # Add module annotations if we have mounted modules
                             if self.mounted_modules is not None:
-                                self.add_module_annotations_to_stitched_image(ax, camera_name)
+                                self.add_module_annotations_to_stitched_image(
+                                    ax, camera_name
+                                )
                             else:
-                                logger.debug(f"No mounted modules available for {camera_name}")
+                                logger.debug(
+                                    f"No mounted modules available for {camera_name}"
+                                )
 
                             # Update colorbar with CO2-based range
                             cbar = self.stitched_images[camera_index - 1].colorbar
                             if cbar is not None:
-                                cbar.set_ticks(np.linspace(colorbar_min, colorbar_max, 5))
+                                cbar.set_ticks(
+                                    np.linspace(colorbar_min, colorbar_max, 5)
+                                )
                                 cbar.set_ticklabels(
-                                    [f"{temp:.1f}°C" for temp in np.linspace(colorbar_min, colorbar_max, 5)]
+                                    [
+                                        f"{temp:.1f}°C"
+                                        for temp in np.linspace(
+                                            colorbar_min, colorbar_max, 5
+                                        )
+                                    ]
                                 )
 
                             # Draw canvas
@@ -814,7 +939,9 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
         try:
             # Get stitching data from thermal camera
             if hasattr(self.system._thermalcamera, "_stitching_data"):
-                for i, (camera_name, camera_data) in enumerate(self.system._thermalcamera._stitching_data.items()):
+                for i, (camera_name, camera_data) in enumerate(
+                    self.system._thermalcamera._stitching_data.items()
+                ):
                     camera_index = int(camera_name[-1]) + 1
                     camera_ui_name = f"camera{camera_index}"
                     if camera_data:
@@ -829,7 +956,10 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                             if pos_images:
                                 last_img = pos_images[-1]
                                 images.append(last_img)
-                                positions.append(float(pos) + self.camera_positions[camera_ui_name]["position"])
+                                positions.append(
+                                    float(pos)
+                                    + self.camera_positions[camera_ui_name]["position"]
+                                )
 
                                 # Update temperature range based on actual data
                                 temp_min = min(temp_min, last_img.min())
@@ -838,7 +968,12 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                         if images:
                             # Create stitched panorama using actual temperature range
                             panorama_norm, panorama = self.stitch_multiple_images(
-                                images, positions, temp_min, temp_max, camera_ui_name, full_coverage=360
+                                images,
+                                positions,
+                                temp_min,
+                                temp_max,
+                                camera_ui_name,
+                                full_coverage=360,
                             )
 
                             # Ensure the panorama is properly sized for 360 degrees
@@ -850,7 +985,9 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
 
                             # Update the stitched view with auto-scaling
                             self.stitched_images[camera_index - 1].set_array(panorama)
-                            self.stitched_images[camera_index - 1].set_clim(temp_min, temp_max)
+                            self.stitched_images[camera_index - 1].set_clim(
+                                temp_min, temp_max
+                            )
 
                             # Clear previous annotations and add new ones
                             ax = self.stitched_axes[camera_index - 1]
@@ -859,11 +996,15 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                                     txt.remove()
 
                             for line in ax.lines[:]:
-                                if hasattr(line, "_module_annotation") or hasattr(line, "_camera_position"):
+                                if hasattr(line, "_module_annotation") or hasattr(
+                                    line, "_camera_position"
+                                ):
                                     line.remove()
 
                             # Add camera position line
-                            current_camera_pos = self.get_camera_effective_position(camera_index)
+                            current_camera_pos = self.get_camera_effective_position(
+                                camera_index
+                            )
                             if current_camera_pos is not None:
                                 camera_line = ax.axvline(
                                     x=current_camera_pos,
@@ -877,13 +1018,20 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
 
                             # Add module annotations
                             if self.mounted_modules is not None:
-                                self.add_module_annotations_to_stitched_image(ax, camera_ui_name)
+                                self.add_module_annotations_to_stitched_image(
+                                    ax, camera_ui_name
+                                )
 
                             # Update colorbar with auto-scale range
                             cbar = self.stitched_images[camera_index - 1].colorbar
                             if cbar is not None:
                                 cbar.set_ticks(np.linspace(temp_min, temp_max, 5))
-                                cbar.set_ticklabels([f"{temp:.1f}°C" for temp in np.linspace(temp_min, temp_max, 5)])
+                                cbar.set_ticklabels(
+                                    [
+                                        f"{temp:.1f}°C"
+                                        for temp in np.linspace(temp_min, temp_max, 5)
+                                    ]
+                                )
 
                             # Draw canvas
                             self.stitched_canvases[camera_index - 1].draw()
@@ -940,7 +1088,9 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
 
             stitching_data = self.system._thermalcamera._stitching_data
 
-            for i, camera_name in enumerate(["camera1", "camera2", "camera3", "camera4"]):
+            for i, camera_name in enumerate(
+                ["camera1", "camera2", "camera3", "camera4"]
+            ):
                 if (
                     camera_name in stitching_data
                     and len(stitching_data[camera_name]) > 0
@@ -954,15 +1104,25 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
 
                     if len(images) > 0:
                         # Get temperature range for this camera
-                        max_temps = self.system._thermalcamera._stitching_max_temperature.get(camera_name, {})
-                        min_temps = self.system._thermalcamera._stitching_min_temperature.get(camera_name, {})
+                        max_temps = (
+                            self.system._thermalcamera._stitching_max_temperature.get(
+                                camera_name, {}
+                            )
+                        )
+                        min_temps = (
+                            self.system._thermalcamera._stitching_min_temperature.get(
+                                camera_name, {}
+                            )
+                        )
 
                         if max_temps and min_temps:
                             temp_max = max(max_temps.values())
                             temp_min = min(min_temps.values())
 
                             # Stitch images
-                            stitched_image, _ = self.stitch_multiple_images(images, positions, temp_min, temp_max, camera_name)
+                            stitched_image, _ = self.stitch_multiple_images(
+                                images, positions, temp_min, temp_max, camera_name
+                            )
 
                             # Update display
                             if i < len(self.stitched_images):
@@ -991,7 +1151,9 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
             else:
                 target_side = camera_side
 
-            logger.debug(f"Camera {camera_name} side: {camera_side}, target_side: {target_side}")
+            logger.debug(
+                f"Camera {camera_name} side: {camera_side}, target_side: {target_side}"
+            )
 
             # Clear previous annotations
             # Remove previous text annotations and lines
@@ -1010,7 +1172,9 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                 module_side = module_info["side"]
                 module_position = module_info["angular_position"]
 
-                logger.debug(f"Module {module_name}: side={module_side}, position={module_position}")
+                logger.debug(
+                    f"Module {module_name}: side={module_side}, position={module_position}"
+                )
 
                 # Only show modules on the same side as the camera
                 if module_side == target_side:
@@ -1019,7 +1183,9 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                     module_x_pos = module_position
 
                     # Get module slot information if available
-                    if "mounted_on" in module_info and ";" in str(module_info["mounted_on"]):
+                    if "mounted_on" in module_info and ";" in str(
+                        module_info["mounted_on"]
+                    ):
                         module_slot = str(module_info["mounted_on"]).split(";")[1]
                     else:
                         module_slot = "-"
@@ -1027,7 +1193,9 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                     # Create annotation text
                     annotation_text = f"{module_slot}:{module_name}"
 
-                    logger.debug(f"Adding annotation '{annotation_text}' at x={module_x_pos}")
+                    logger.debug(
+                        f"Adding annotation '{annotation_text}' at x={module_x_pos}"
+                    )
 
                     # Add text annotation on the top x-axis with 45-degree rotation
                     text_obj = ax.text(
@@ -1047,15 +1215,25 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                     text_obj._module_annotation = True
 
                     # Add a dashed vertical line to mark the exact position
-                    line_obj = ax.axvline(x=module_x_pos, color="black", linestyle="--", alpha=0.7, linewidth=1.5)
+                    line_obj = ax.axvline(
+                        x=module_x_pos,
+                        color="black",
+                        linestyle="--",
+                        alpha=0.7,
+                        linewidth=1.5,
+                    )
 
                     # Mark as module annotation for easy removal
                     line_obj._module_annotation = True
 
                     annotation_count += 1
-                    logger.debug(f"Added annotation {annotation_count}: {annotation_text} at position {module_x_pos}")
+                    logger.debug(
+                        f"Added annotation {annotation_count}: {annotation_text} at position {module_x_pos}"
+                    )
 
-            logger.info(f"Added {annotation_count} module annotations for {camera_name} on side {camera_side}")
+            logger.info(
+                f"Added {annotation_count} module annotations for {camera_name} on side {camera_side}"
+            )
 
             # Adjust the top margin to make room for the angled text
             # Get current subplot parameters
@@ -1084,23 +1262,29 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                 # Get slider and label widgets
                 slider = self.findChild(QtWidgets.QSlider, slider_name)
                 label = self.findChild(QtWidgets.QLabel, config["label"])
-                
+
                 if slider and label:
                     camera_name = config["camera"]
-                    
+
                     # Set initial slider value and label text
                     initial_fov = self.camera_fovs[camera_name]
                     slider.setValue(initial_fov)
                     label.setText(str(initial_fov))
-                    
+
                     # Connect slider to update function using lambda to capture camera name
                     slider.valueChanged.connect(
-                        lambda value, cam=camera_name, lbl=label: self.on_fov_changed(cam, value, lbl)
+                        lambda value, cam=camera_name, lbl=label: self.on_fov_changed(
+                            cam, value, lbl
+                        )
                     )
-                    
-                    logger.info(f"Connected FOV slider for {camera_name}, initial value: {initial_fov}")
+
+                    logger.info(
+                        f"Connected FOV slider for {camera_name}, initial value: {initial_fov}"
+                    )
                 else:
-                    logger.warning(f"Could not find slider '{slider_name}' or label '{config['label']}'")
+                    logger.warning(
+                        f"Could not find slider '{slider_name}' or label '{config['label']}'"
+                    )
 
         except Exception as e:
             logger.error(f"Error setting up FOV sliders: {e}")
@@ -1110,17 +1294,17 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
         try:
             # Update the camera's FOV value
             self.camera_fovs[camera_name] = fov_value
-            
+
             # Update the label to show current value
             label.setText(str(fov_value))
-            
+
             logger.info(f"FOV for {camera_name} changed to {fov_value} degrees")
-            
+
             # Optionally trigger immediate update of displays
             # Note: This might cause frequent updates while dragging the slider
             # You can uncomment this if you want real-time updates
             # self.update_displays()
-            
+
         except Exception as e:
             logger.error(f"Error handling FOV change for {camera_name}: {e}")
 
@@ -1160,7 +1344,9 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
             table.setHorizontalHeaderLabels(horizontal_headers)
 
             # Set vertical headers (temperature keys)
-            vertical_headers = temp_keys.copy()  # Copy temperature keys for vertical headers
+            vertical_headers = (
+                temp_keys.copy()
+            )  # Copy temperature keys for vertical headers
             table.setVerticalHeaderLabels(vertical_headers)
             # Populate the table with empty strings initially
             for row in range(len(temp_keys)):
@@ -1209,7 +1395,9 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
         """Update the module temperature table with current data"""
         try:
             if not hasattr(self, "mqtt_client"):
-                logger.warning("MQTT client not initialized, cannot update temperature table")
+                logger.warning(
+                    "MQTT client not initialized, cannot update temperature table"
+                )
                 return
 
             # Get the latest status from the MQTT client
@@ -1223,22 +1411,38 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                 for mounted_module, mounted_module_info in self.mounted_modules.items():
                     mounted_module_fuse_id = mounted_module_info.get("fuseId", None)
                     if mounted_module_fuse_id is None:
-                       # logger.warning(f"Mounted module {mounted_module} does not have a fuseId, skipping")
+                        # logger.warning(f"Mounted module {mounted_module} does not have a fuseId, skipping")
                         continue
                     if mounted_module_fuse_id == monitored_fuse_id:
-                        column_index = int(mounted_module_info.get("mounted_on", "-").split(";")[1])
-                        if column_index is not None and column_index < self.module_temp_table.columnCount():
+                        column_index = int(
+                            mounted_module_info.get("mounted_on", "-").split(";")[1]
+                        )
+                        if (
+                            column_index is not None
+                            and column_index < self.module_temp_table.columnCount()
+                        ):
                             for temp_key, temperature in temp_data.items():
                                 if temp_key in self.temp_keys:
-                                    if temp_key in mounted_module_info["temperature_offsets"]:
-                                        temperature += mounted_module_info["temperature_offsets"][temp_key]
-                                        item = QtWidgets.QTableWidgetItem(f"{temperature:.1f}")
+                                    if (
+                                        temp_key
+                                        in mounted_module_info["temperature_offsets"]
+                                    ):
+                                        temperature += mounted_module_info[
+                                            "temperature_offsets"
+                                        ][temp_key]
+                                        item = QtWidgets.QTableWidgetItem(
+                                            f"{temperature:.1f}"
+                                        )
                                     else:
                                         # change the color of the cell to red if no offset is found
-                                        item = QtWidgets.QTableWidgetItem(f"{temperature:.1f}")
+                                        item = QtWidgets.QTableWidgetItem(
+                                            f"{temperature:.1f}"
+                                        )
                                         item.setBackground(QColor(255, 0, 0))
                                     row_index = self.temp_keys.index(temp_key)
-                                    self.module_temp_table.setItem(row_index, column_index - 1, item)
+                                    self.module_temp_table.setItem(
+                                        row_index, column_index - 1, item
+                                    )
 
             # Note: Removed the publishing logic from here - it's now handled in handle_message
 
@@ -1247,10 +1451,12 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
 
     def publish_calibrated_data(self, fuse_id, temp_data):
         """Publish calibrated temperature data for a specific module"""
-        print(fuse_id,temp_data)
+        print(fuse_id, temp_data)
         try:
             if not hasattr(self, "mqtt_client"):
-                logger.warning("MQTT client not initialized, cannot publish calibrated data")
+                logger.warning(
+                    "MQTT client not initialized, cannot publish calibrated data"
+                )
                 return
 
             to_publish = {}
@@ -1263,11 +1469,20 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                     for temp_key, temperature in temp_data.items():
                         if temp_key in self.temp_keys:
                             if temp_key in mounted_module_info["temperature_offsets"]:
-                                calibrated_temp = temperature + mounted_module_info["temperature_offsets"][temp_key]
-                                original_key = self.mqtt_client.key_map.get(temp_key, temp_key)
+                                calibrated_temp = (
+                                    temperature
+                                    + mounted_module_info["temperature_offsets"][
+                                        temp_key
+                                    ]
+                                )
+                                original_key = self.mqtt_client.key_map.get(
+                                    temp_key, temp_key
+                                )
                                 to_publish[original_key] = calibrated_temp
                             else:
-                                logger.warning(f"No offset found for {temp_key} in module {mounted_module}")
+                                logger.warning(
+                                    f"No offset found for {temp_key} in module {mounted_module}"
+                                )
 
                     break  # Found the module, no need to continue
 
@@ -1276,9 +1491,13 @@ class ModuleTemperaturesTAB(QtWidgets.QMainWindow):
                 topic = f"{self.mqtt_client.BASE_TOPIC}/calib_data"
                 payload = json.dumps(to_publish)
                 self.mqtt_client.client.publish(topic, payload)
-                logger.info(f"Published calibrated temperature data for fuse_id {fuse_id}: {to_publish}")
+                logger.info(
+                    f"Published calibrated temperature data for fuse_id {fuse_id}: {to_publish}"
+                )
             else:
-                logger.debug(f"No calibrated temperature data to publish for fuse_id {fuse_id}")
+                logger.debug(
+                    f"No calibrated temperature data to publish for fuse_id {fuse_id}"
+                )
 
         except Exception as e:
             logger.error(f"Error publishing calibrated data: {e}")
@@ -1365,8 +1584,12 @@ class ModuleTempMQTT:
         self.mqtt_settings = self.system._settings["mqtt"]
         self.gui_reference = None
         try:
-            self.client.connect(self.mqtt_settings["broker"], self.mqtt_settings["port"], keepalive=60)
-            logger.info(f"Connected to MQTT broker at {self.system.BROKER}:{self.system.PORT}")
+            self.client.connect(
+                self.mqtt_settings["broker"], self.mqtt_settings["port"], keepalive=60
+            )
+            logger.info(
+                f"Connected to MQTT broker at {self.system.BROKER}:{self.system.PORT}"
+            )
         except Exception as e:
             logger.error(f"Failed to connect to MQTT broker: {e}")
 

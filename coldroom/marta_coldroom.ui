@@ -14,7 +14,92 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">QWidget {
+    background-color: #eef1f5;
+    color: #2b3648;
+    font-family: &quot;Segoe UI&quot;, &quot;Ubuntu&quot;, &quot;Helvetica Neue&quot;, Arial, sans-serif;
+    font-size: 13px;
+}
+QGroupBox {
+    background-color: #ffffff;
+    border: 1px solid #e2e7ee;
+    border-radius: 12px;
+    margin-top: 16px;
+    padding: 12px 10px 10px 10px;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    left: 14px;
+    padding: 2px 8px;
+    color: #5b6b82;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+QLabel {
+    background: transparent;
+    color: #3a4759;
+}
+QPushButton {
+    background-color: #ffffff;
+    color: #2b3648;
+    border: 1px solid #cdd6e2;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-weight: 600;
+}
+QPushButton:hover {
+    background-color: #f2f6fc;
+    border-color: #3b82f6;
+    color: #1d4ed8;
+}
+QPushButton:pressed {
+    background-color: #e6edf7;
+}
+QPushButton:disabled {
+    color: #aab4c2;
+    background-color: #f6f8fb;
+    border-color: #e2e7ee;
+}
+QLineEdit {
+    background-color: #ffffff;
+    border: 1px solid #cdd6e2;
+    border-radius: 8px;
+    padding: 6px 10px;
+    selection-background-color: #3b82f6;
+}
+QLineEdit:focus {
+    border: 1px solid #3b82f6;
+}
+QCheckBox {
+    spacing: 6px;
+}
+#safe_to_open_LED, #soft_interlock_LED {
+    border-radius: 38px;
+    border: 4px solid rgba(43, 54, 72, 0.08);
+}
+#ctrl_temp_LED, #ctrl_humidity_LED, #dryair_LED, #dryair_bypass_LED, #light_LED, #marta_flow_flag_LED {
+    border-radius: 15px;
+    border: 2px solid rgba(43, 54, 72, 0.10);
+}</string>
+   </property>
    <layout class="QGridLayout" name="gridLayout_10">
+    <property name="leftMargin">
+     <number>16</number>
+    </property>
+    <property name="topMargin">
+     <number>16</number>
+    </property>
+    <property name="rightMargin">
+     <number>16</number>
+    </property>
+    <property name="bottomMargin">
+     <number>16</number>
+    </property>
+    <property name="spacing">
+     <number>14</number>
+    </property>
     <item row="0" column="0" colspan="2">
      <widget class="QGroupBox" name="groupBox_4">
       <property name="title">
@@ -25,18 +110,18 @@
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
+           <item alignment="Qt::AlignHCenter">
             <widget class="QFrame" name="safe_to_open_LED">
              <property name="minimumSize">
               <size>
-               <width>60</width>
-               <height>60</height>
+               <width>76</width>
+               <height>76</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>300</width>
-               <height>300</height>
+               <width>76</width>
+               <height>76</height>
               </size>
              </property>
              <property name="styleSheet">
@@ -60,7 +145,9 @@
              </property>
              <property name="font">
               <font>
-               <pointsize>20</pointsize>
+               <pointsize>15</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
               </font>
              </property>
              <property name="text">
@@ -84,7 +171,7 @@
           <widget class="QLabel" name="door_safety_msg">
            <property name="font">
             <font>
-             <pointsize>16</pointsize>
+             <pointsize>12</pointsize>
             </font>
            </property>
            <property name="text">
@@ -98,18 +185,18 @@
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
+           <item alignment="Qt::AlignHCenter">
             <widget class="QFrame" name="soft_interlock_LED">
              <property name="minimumSize">
               <size>
-               <width>60</width>
-               <height>60</height>
+               <width>76</width>
+               <height>76</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>300</width>
-               <height>300</height>
+               <width>76</width>
+               <height>76</height>
               </size>
              </property>
              <property name="styleSheet">
@@ -133,7 +220,9 @@
              </property>
              <property name="font">
               <font>
-               <pointsize>16</pointsize>
+               <pointsize>15</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
               </font>
              </property>
              <property name="text">
@@ -157,7 +246,7 @@
           <widget class="QLabel" name="soft_interlock_msg">
            <property name="font">
             <font>
-             <pointsize>16</pointsize>
+             <pointsize>12</pointsize>
             </font>
            </property>
            <property name="text">

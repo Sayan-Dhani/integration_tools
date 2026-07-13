@@ -36,7 +36,9 @@ class ThermalCameraMQTTClient:
 
         try:
             self._client.connect(self._system.BROKER, self._system.PORT, keepalive=60)
-            logger.info(f"Connected to MQTT broker at {self._system.BROKER}:{self._system.PORT}")
+            logger.info(
+                f"Connected to MQTT broker at {self._system.BROKER}:{self._system.PORT}"
+            )
         except Exception as e:
             logger.error(f"Failed to connect to MQTT broker: {e}")
             raise
@@ -88,10 +90,15 @@ class ThermalCameraMQTTClient:
             position = float(data["position"])
 
             # Convert to float array
-            flo_arr = [struct.unpack("f", image_data[i : i + 4])[0] for i in range(0, len(image_data), 4)]
+            flo_arr = [
+                struct.unpack("f", image_data[i : i + 4])[0]
+                for i in range(0, len(image_data), 4)
+            ]
 
             # Process image
-            processed_image = np.flip(np.rot90(np.array(flo_arr).reshape(24, 32)), axis=0)
+            processed_image = np.flip(
+                np.rot90(np.array(flo_arr).reshape(24, 32)), axis=0
+            )
 
             # Store for stitching - accumulate images for each position
             if camera_name not in self._stitching_data:
@@ -104,7 +111,9 @@ class ThermalCameraMQTTClient:
 
             # Keep only the last 5 images for each position to prevent memory issues
             if len(self._stitching_data[camera_name][position]) > 5:
-                self._stitching_data[camera_name][position] = self._stitching_data[camera_name][position][-5:]
+                self._stitching_data[camera_name][position] = self._stitching_data[
+                    camera_name
+                ][position][-5:]
 
             # Update current image
             self._images[camera_name] = processed_image
