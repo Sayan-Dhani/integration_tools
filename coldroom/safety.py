@@ -151,9 +151,7 @@ def check_door_safe_to_open(system_status, caen_ch_status, used_channels):
     try:
         # Check if we have all necessary data
         if "coldroom" not in system_status:
-            return (
-                False  # Conservative approach - if we can't check, assume it's unsafe
-            )
+            return False, "coldroom data not available — assuming unsafe"
 
         # 1. Check if dew point conditions are safe.
         # Cleanroom status carries a "last_update" timestamp string, not an
@@ -171,25 +169,52 @@ def check_door_safe_to_open(system_status, caen_ch_status, used_channels):
             except (ValueError, TypeError) as e:
                 logger.debug(f"Could not parse cleanroom last_update: {str(e)}")
                 clean_room_expired = True  # Unparseable → treat as expired
+        # Pull raw values used by check_dew_point so we can show the actual numbers.
+        marta_supply = system_status.get("marta", {}).get("TT05_CO2")
+        marta_return  = system_status.get("marta", {}).get("TT06_CO2")
+        coldroom_t    = system_status.get("coldroom", {}).get("ch_temperature", {}).get("value")
+        temps         = [t for t in [marta_supply, marta_return, coldroom_t] if t is not None]
+        ext_dew       = system_status.get("cleanroom", {}).get("dewpoint")
+
         if clean_room_expired:
             dew_point_safe = False
-            log_msg += f"!!! Warning: Cleanroom data expired, not able to check dew point !!!\n"
+            dew_reason = "cleanroom sensor data expired (no update in >10 min)"
+            log_msg += "!!! Warning: Cleanroom data expired, not able to check dew point !!!\n"
+        elif not temps:
+            dew_point_safe = False
+            dew_reason = "no internal temperature readings available"
+        elif ext_dew is None:
+            dew_point_safe = False
+            dew_reason = "no dew point reading from cleanroom sensor"
         else:
             dew_point_safe = check_dew_point(system_status)
-            if not dew_point_safe:
-                log_msg += f"!!! Warning: Dew point conditions are not safe for opening door !!!\n"
-                log_msg += f"Dew point safe: NO\n"
+            min_t = min(temps)
+            if dew_point_safe:
+                dew_reason = (
+                    f"min internal temp {min_t:.1f}°C > "
+                    f"dew point {ext_dew:.1f}°C + 1°C safety margin"
+                )
             else:
-                log_msg += f"Dew point safe: YES\n"
+                dew_reason = (
+                    f"min internal temp {min_t:.1f}°C ≤ "
+                    f"dew point {ext_dew:.1f}°C + 1°C safety margin"
+                )
+                log_msg += "!!! Warning: Dew point conditions are not safe for opening door !!!\n"
+        log_msg += f"Dew point safe: {'YES' if dew_point_safe else 'NO'} ({dew_reason})\n"
 
         # 2. Check if high voltage is off
-        hv_on = check_any_hv_on(caen_ch_status, used_channels)
+        hv_on   = check_any_hv_on(caen_ch_status, used_channels)
         hv_safe = not hv_on
-        if hv_safe == False:
-            log_msg += f"!!! Warning: High voltage is ON, not safe to open door !!!\n"
-            log_msg += f"High voltage safe: NO\n"
+        if not hv_safe:
+            on_hv = [
+                ch for ch in used_channels.get("HV", [])
+                if ch and bool(caen_ch_status.get(f"caen_{ch}_IsOn", False))
+            ]
+            hv_reason = f"channel(s) still ON: {on_hv}" if on_hv else "HV status uncertain"
+            log_msg += "!!! Warning: High voltage is ON, not safe to open door !!!\n"
         else:
-            log_msg += f"High voltage safe: YES\n"
+            hv_reason = "all HV channels are off"
+        log_msg += f"High voltage safe: {'YES' if hv_safe else 'NO'} ({hv_reason})\n"
 
         # 3. Check if light is off (light should be off when opening door)
         # light_off = not check_light_status(system_status)
@@ -292,9 +317,7 @@ def Is_it_safe_to_on_lv(system_status, caen_ch_status, used_channels):
     try:
         # Check if we have all necessary data
         if "coldroom" not in system_status:
-            return (
-                False  # Conservative approach - if we can't check, assume it's unsafe
-            )
+            return False, "coldroom data not available — assuming unsafe"
 
         # Check if MARTA is running
         marta_safe, marta_msg = check_marta_safe(system_status)
@@ -402,9 +425,29 @@ def check_marta_on_for_IT(system_status):
         return False
 
 
+def switch_all_hv_off(caen, used_channels):
+    """
+    Turn off all HV channels.
+    Must be called BEFORE switch_all_lv_off — cutting LV while HV is still
+    ramped risks a sudden uncontrolled discharge through the silicon sensors.
+    Returns True if all commands were sent successfully.
+    """
+    try:
+        for channel in used_channels["HV"]:
+            if channel is None:
+                continue
+            logger.warning(f"Safety interlock: turning off HV channel {channel}")
+            caen.off(channel)
+        return True
+    except Exception as e:
+        logger.error(f"Error in switch_all_hv_off: {str(e)}")
+        return False
+
+
 def switch_all_lv_off(caen, used_channels):
     """
     Turn off all LV channels.
+    Always call switch_all_hv_off first so HV has been cut before LV is removed.
     Returns True if all commands were sent successfully.
     """
     try:
@@ -427,10 +470,12 @@ def soft_interlock_loop(
     Soft interlock loop - monitors safety conditions and takes protective action.
 
     Decision tree (evaluated every ~5 s):
-      1. If MARTA is not in a safe/connected state AND LV is on
-             → switch all LV off immediately
-      2. Else if LV is on AND MARTA CO2 is not flowing to OT modules
-             → switch all LV off immediately
+      1. If MARTA is not in a safe/connected state AND any power (HV or LV) is on
+             → switch all HV off first, then all LV off
+      2. Else if any power is on AND MARTA CO2 is not flowing to OT modules
+             → switch all HV off first, then all LV off
+      HV is always cut before LV to avoid an uncontrolled discharge
+      through the silicon sensors.
       (IT modules share the same MARTA CO2 system; a full MARTA shutdown
        is caught by condition 1.  Per-valve IT protection requires
        serviceroom data to be subscribed — see check_marta_on_for_IT.)
@@ -466,16 +511,21 @@ def soft_interlock_loop(
         )
         logger.info(log_msg)
 
+        hv_on = check_any_hv_on(caen_ch_status, used_channels)
+        hv_status = "ON" if hv_on else "OFF"
+        log_msg += f"HV={hv_status}\n"
+
         # --- Condition 1: MARTA itself is not safe (e.g. disconnected) ---
         if not lv_safe_to_on:
             log_msg += "\n!!! Warning: MARTA not safe — LV safe to turn on: NO\n"
             log_msg += lv_safe_msg
-            if lv_on:
+            if lv_on or hv_on:
                 alarm_msg = (
-                    "SAFETY INTERLOCK: MARTA is not in a safe state and LV channels are ON. "
-                    "Turning off all LV channels to prevent module damage."
+                    "SAFETY INTERLOCK: MARTA is not in a safe state and power is ON. "
+                    "Turning off all HV then LV channels to prevent module damage."
                 )
                 logger.warning(alarm_msg)
+                switch_all_hv_off(caen, used_channels)
                 switch_all_lv_off(caen, used_channels)
                 if publish_alarm:
                     publish_alarm(alarm_msg)
@@ -485,12 +535,13 @@ def soft_interlock_loop(
         log_msg += "\nLV safe to turn on: YES\n"
 
         # --- Condition 2: MARTA connected but CO2 not flowing to OT ---
-        if lv_on and not marta_ot:
+        if (lv_on or hv_on) and not marta_ot:
             alarm_msg = (
-                "SAFETY INTERLOCK: LV channels are ON but MARTA OT CO2 is not flowing. "
-                "Turning off all LV channels to prevent module damage."
+                "SAFETY INTERLOCK: Power is ON but MARTA OT CO2 is not flowing. "
+                "Turning off all HV then LV channels to prevent module damage."
             )
             logger.warning(alarm_msg)
+            switch_all_hv_off(caen, used_channels)
             switch_all_lv_off(caen, used_channels)
             if publish_alarm:
                 publish_alarm(alarm_msg)

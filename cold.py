@@ -1094,14 +1094,16 @@ class MainApp(QtWidgets.QMainWindow):
                     if "co2_sensor" in self.system.status:
                         co2_data = self.system.status["co2_sensor"]
                         if "CO2" in co2_data:
-                            if co2_data["CO2"] > 800:
+                            ppm = co2_data["CO2"]
+                            if ppm > 800:
                                 is_safe = False
-                                # door_msg += "CO2 levels safe: False"
-                                door_msg += "CO2 levels safe: NO"
-                                door_msg += f" (Current CO2: {co2_data['CO2']:.1f} ppm > 800 ppm)"
+                                door_msg += f"CO2 levels safe: NO (current {ppm:.0f} ppm > 800 ppm threshold — risk of oxygen depletion)\n"
                             else:
-                                # door_msg += "CO2 levels safe: True"
-                                door_msg += "CO2 levels safe: Yes"
+                                door_msg += f"CO2 levels safe: YES (current {ppm:.0f} ppm < 800 ppm threshold)\n"
+                        else:
+                            door_msg += "CO2 levels safe: UNKNOWN (sensor present but no CO2 reading)\n"
+                    else:
+                        door_msg += "CO2 levels safe: UNKNOWN (CO2 sensor data not available)\n"
                     safe_to_open_led.setStyleSheet(
                         "background-color: green;"
                         if is_safe
